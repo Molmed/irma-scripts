@@ -59,8 +59,8 @@ module load bioinfo-tools FastQC
 # Get unique string
 UNIQSTR=$(echo `date '+%Y%m%d%H%M%S'`$PROJECT)
 
-sbatch -A ngi2016001 -p core -n 8 -t 01-00:00:00 -J FastQC_$PROJECT -e $PROJECT_PATH"/fastqc_and_multiqc_"$PROJECT".log" -o $PROJECT_PATH"/fastqc_and_multiqc_"$PROJECT".log" \
---wrap "mkdir $SNIC_TMP/$UNIQSTR; find $PROJECT_PATH -name \"$SEARCH_PATTERN\" | xargs -n 1 -P 8 -I{} fastqc -o $SNIC_TMP/$UNIQSTR {}; multiqc --template default --title $PROJECT -z $SNIC_TMP/$UNIQSTR -o $PROJECT_PATH"
+sbatch -A ngi2016001 -p core -n 16 -t 02-00:00:00 -J FastQC_$PROJECT -e $PROJECT_PATH"/fastqc_and_multiqc_"$PROJECT".log" -o $PROJECT_PATH"/fastqc_and_multiqc_"$PROJECT".log" \
+--wrap "mkdir $SNIC_TMP/$UNIQSTR; find $PROJECT_PATH -name \"$SEARCH_PATTERN\" | xargs -n 1 -P 16 -I{} fastqc -o $SNIC_TMP/$UNIQSTR {}; multiqc --template default --title $PROJECT -z $SNIC_TMP/$UNIQSTR -o $PROJECT_PATH"
 
 sleep 5
 
@@ -73,8 +73,8 @@ then
   UNDET_PATH=`dirname $PROJECT_PATH`
   SEARCH_PATTERN='Undetermined_*_L00['{$UNDET_LANES}']_*fastq.gz'
   PROJECT=`basename $PROJECT_PATH`"_Undetermined"
-  sbatch -A ngi2016001 -p core -n 8 -t 01-00:00:00 -J FastQC_$PROJECT -e $PROJECT_PATH"/fastqc_and_multiqc_"$PROJECT".log" -o $PROJECT_PATH"/fastqc_and_multiqc_"$PROJECT".log" \
-  --wrap "mkdir $SNIC_TMP/$UNIQSTR; find $UNDET_PATH -name \"$SEARCH_PATTERN\" | xargs -n 1 -P 8 -I{} fastqc -o $SNIC_TMP/$UNIQSTR {}; multiqc --template default --title $PROJECT -z $SNIC_TMP/$UNIQSTR -o $PROJECT_PATH"
+  sbatch -A ngi2016001 -p core -n 16 -t 02-00:00:00 -J FastQC_$PROJECT -e $PROJECT_PATH"/fastqc_and_multiqc_"$PROJECT".log" -o $PROJECT_PATH"/fastqc_and_multiqc_"$PROJECT".log" \
+  --wrap "mkdir $SNIC_TMP/$UNIQSTR; find $UNDET_PATH -name \"$SEARCH_PATTERN\" | xargs -n 1 -P 16 -I{} fastqc -o $SNIC_TMP/$UNIQSTR {}; multiqc --template default --title $PROJECT -z $SNIC_TMP/$UNIQSTR -o $PROJECT_PATH"
 fi
 
 if [ $UNDET_LANES ] && [ -z $INCLUDE_INDEX ]
@@ -83,7 +83,7 @@ then
   UNDET_PATH=`dirname $PROJECT_PATH`
   SEARCH_PATTERN='Undetermined_*_L00['{$UNDET_LANES}']_R[1-2]_*fastq.gz'
   PROJECT=`basename $PROJECT_PATH`"_Undetermined"
-  sbatch -A ngi2016001 -p core -n 8 -t 01-00:00:00 -J FastQC_$PROJECT -e $PROJECT_PATH"/fastqc_and_multiqc_"$PROJECT".log" -o $PROJECT_PATH"/fastqc_and_multiqc_"$PROJECT".log" \
-  --wrap "mkdir $SNIC_TMP/$UNIQSTR; find $UNDET_PATH -name \"$SEARCH_PATTERN\" | xargs -n 1 -P 8 -I{} fastqc -o $SNIC_TMP/$UNIQSTR {}; multiqc --template default --title $PROJECT -z $SNIC_TMP/$UNIQSTR -o $PROJECT_PATH"
+  sbatch -A ngi2016001 -p core -n 16 -t 02-00:00:00 -J FastQC_$PROJECT -e $PROJECT_PATH"/fastqc_and_multiqc_"$PROJECT".log" -o $PROJECT_PATH"/fastqc_and_multiqc_"$PROJECT".log" \
+  --wrap "mkdir $SNIC_TMP/$UNIQSTR; find $UNDET_PATH -name \"$SEARCH_PATTERN\" | xargs -n 1 -P 16 -I{} fastqc -o $SNIC_TMP/$UNIQSTR {}; multiqc --template default --title $PROJECT -z $SNIC_TMP/$UNIQSTR -o $PROJECT_PATH"
 fi
 
