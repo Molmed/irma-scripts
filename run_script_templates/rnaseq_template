@@ -1,20 +1,20 @@
 #!/bin/sh
 #SBATCH -A ngi2016001
 #SBATCH -p core
-#SBATCH -n 16
+#SBATCH -n 2
 #SBATCH -t 10-00:00:00
-#SBATCH -J rnaseq_PROJECT
-#SBATCH -e /proj/ngi2016001/nobackup/NGI/ANALYSIS/PROJECT/logs/rnaseq_%j.log
-#SBATCH -o /proj/ngi2016001/nobackup/NGI/ANALYSIS/PROJECT/logs/rnaseq_%j.log
+#SBATCH -J rnaseq__PROJECT_
+#SBATCH -e _ANALYSISDIR_/_PROJECT_/logs/rnaseq_%j.log
+#SBATCH -o _ANALYSISDIR_/_PROJECT_/logs/rnaseq_%j.log
 
 # Source NGI environment
 source /lupus/ngi/production/latest/conf/sourceme_upps.sh
 source activate NGI
 
 #set Nextflow env variables
-export NXF_WORK=/proj/ngi2016001/nobackup/NGI/ANALYSIS/PROJECT/work
+export NXF_WORK=_ANALYSISDIR_/_PROJECT_/work
 
-rnaseq -resume --genome GENOME \
-    --reads '/proj/ngi2016001/nobackup/NGI/DATA/merged_fastqs_PROJECT/*_R{1,2}.fastq.gz' \
-    --outdir /proj/ngi2016001/nobackup/NGI/ANALYSIS/PROJECT/results --reverse-stranded
-
+rnaseq -resume _CONFIG_ --genome _GENOME_ \
+    --reads '_DATADIR_/merged_fastqs__PROJECT_/*_R{1,2}.fastq.gz' \
+    --outdir _ANALYSISDIR_/_PROJECT_/results --reverse-stranded \
+    --clip_r1 1 --clip_r2 1 --three_prime_clip_r1 1 --three_prime_clip_r2 1 _EXTRAARGS_
