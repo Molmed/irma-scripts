@@ -51,5 +51,5 @@ sbatch -A ngi2016001 -n 8 -t 10:00:00 -J "checksums_$PROJECT" -o "${ANALYSIS_DIR
 
 # Copy multiqc report to seqsummaries
 mkdir -p "${SEQSUM_DIR}"
-cp -r  "${ANALYSIS_DIR}/${REPORT_REL_LOCATION}/*" "${SEQSUM_DIR}"
+cp -r  "${ANALYSIS_DIR}/${REPORT_REL_LOCATION}/"* "${SEQSUM_DIR}"
 
