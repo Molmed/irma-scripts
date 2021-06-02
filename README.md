@@ -31,4 +31,6 @@ The script will summarize the output in one or several MultiQC-reports.
 Scans incoming for csv-files at most two folders down and greps for the given string, then echoes folder if found.
 * __cleanup_nf_projects.py__ - Script for cleaning up old analysis nextflow projects. The script will list folders (with full path)
  that will be deleted and calculate how much data will be removed. It will wait for input from user before removing anything. See usage at the top of the script.
- 
+* __make_nf_run_script.py__ - Script for generating an sbatch run script for NextFlow rnaseq and methylseq pipelines. See usage at the top of the script.
+* __merge_fastqs.py__ - Script for merging fastq-files from different lanes / runs per sample.
+* __start_merge.py__ - Convenience script for merging fastq files in a project per sample, depends on merge_fastqs.py
