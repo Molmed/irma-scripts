@@ -1,6 +1,7 @@
 #!/bin/bash
 
-SCRIPTSDIR="/proj/ngi2016001/private/local_scripts/exome_scripts"
+SCRIPTSDIR="$(dirname "$(readlink -f "$0")")"
+ANALYSISDIR="/proj/ngi2016001/nobackup/NGI/ANALYSIS/"
 
 if [[ $# -eq 1 ]] ; then
   project=$1
@@ -16,9 +17,9 @@ fi
 echo ${project}
 
 #  generate corresponding sbatch file using
-sed "s/=PROJECT=/${project}/g" ${SCRIPTSDIR}/twist_exome_38_template.sbatch > /proj/ngi2016001/nobackup/NGI/ANALYSIS/${project}/twistexome.sbatch
+sed "s/=PROJECT=/${project}/g" ${SCRIPTSDIR}/twist_exome_38_template.sbatch > ${ANALYSISDIR}${project}/twistexome.sbatch
 
 #   check that the batch file looks ok and
 #   start the analysis by running
-#    $>  sbatch /proj/ngi2016001/nobackup/NGI/ANALYSIS/${project}/twistexome.sbatch
+#    $>  sbatch ${ANALYSISDIR}${project}/twistexome.sbatch
 #
