@@ -1,48 +1,45 @@
 import os
 import sys
 import re
+
 inFile = sys.argv[1]
 outFile = sys.argv[2]
 
 sampleDict = {}
-outList = []
 
-with open(inFile, 'r') as f:
-	lines = f.readlines()
-k = 0
-for i in lines:
-	pattern = r'^(.*)_(S\d+)_L(\d+)_(R\d)_001.*$'
-	bnm = re.match(pattern, os.path.basename(i))
-	#TODO: 5th field in tsv might later on be changed from an int to a string containing "[FCID].[laneno].[ssheet_idx]".
-	# Only applicable on NovaSeq runs. Split below will not work for Miseq runs.
-	#fcid = i.split(os.path.sep)[-2].split("_")[-1][1:]
+with open(inFile, 'r') as fileHandler:
 
-	if bnm:
-		sample = bnm.group(1)
-		ssheet_idx = bnm.group(2)
-		laneno = int(bnm.group(3))
-		readnr = bnm.group(4)
+    for line in fileHandler:
+        line = line.strip()
 
-	else:
-		continue
+        fqpattern = r'^(.*)_(S\d+)_L(\d+)_(R\d)_001.*$'
+        fqbasenm = re.match(fqpattern, os.path.basename(line))
 
-	if readnr == "R1":
-		if sample not in sampleDict:
-			sampleDict[sample] = 0
-		sampleDict[sample] += 1
+        if fqbasenm:
+            sample = fqbasenm.group(1)
+            ssheet_idx = fqbasenm.group(2)
+            laneno = int(fqbasenm.group(3))
+            readnr = fqbasenm.group(4)
 
-		if k != len(lines)-1:
-			nxtrd = re.match(pattern, os.path.basename(lines[k+1]))
-		if nxtrd.group(4) == "R2":
-			newline = '\t'.join((sample,"ZZ","0",sample,str(sampleDict[sample]),i.rstrip("\n"),lines[k+1]))
-			outList.append(newline)
-		else:
-			newline = '\t'.join((sample,"ZZ","0",sample,str(sampleDict[sample]),i))
-			outList.append(newline)
-		k += 1
-	else:
-		k += 1
-		continue
+        else:
+            continue
 
-with open(outFile, 'a') as of:
-	of.write(''.join(outList))
+        fcpattern = r'^.*_[AB]?([^_]+)$'
+        m = re.match(fcpattern, os.path.basename(os.path.dirname(line)))
+        fcid = m.group(1) if m else "NA"
+
+        readgrp = f"{fcid}.{laneno}.{ssheet_idx}"# PU, Plattform unit. Will be used as read tag in BAM-files.
+
+        if readgrp not in sampleDict:
+            sampleDict[readgrp] = [sample]
+        sampleDict[readgrp].append(line)
+
+with open(outFile, 'w') as outf:
+
+    for readgrp, sample_files in sampleDict.items():
+        samplenm = sample_files[0]
+        fqfiles = sample_files[1:]
+        #Write to .tsv: subject sex status sample PU fastq1 fastq2
+        entry = "\t".join([samplenm, "ZZ", "0", samplenm, readgrp] + fqfiles)
+
+        outf.write(f"{entry}\n")
