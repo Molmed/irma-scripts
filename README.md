@@ -34,3 +34,10 @@ Scans incoming for csv-files at most two folders down and greps for the given st
 * __make_nf_run_script.py__ - Script for generating an sbatch run script for NextFlow rnaseq and methylseq pipelines. See usage at the top of the script.
 * __merge_fastqs.py__ - Script for merging fastq-files from different lanes / runs per sample.
 * __start_merge.py__ - Convenience script for merging fastq files in a project per sample, depends on merge_fastqs.py
+* __1_create_reference_tsv.bash__ - A helper script to create_reference_tsv.py. 
+* __create_reference_tsv.py__ - A script for writing sample info and paths to a WES project's fastq-files in a .tsv-file used by Sarek.
+* __2_create_twist_exome_analysis.bash__ - This script will use a template, twist_exome_38_template.sbatch, to create a sbatch script to start Sarek for WES analysis.
+* __twist_exome_38_template.sbatch__ - Template for running Sarek 2.6.1 on WES-data using reference GRCh38.
+* __charon_project_samples_status_update.sh__ - Script to get all samples in Charon for a supplied project and set the analysis_status to ANALYZED and the status to STALE.
+* __run_hs_metrics.sh__ - Run CollectHsMtrics for all recalibrated BAM files in a WES project.
+* __bed2interval_list.sh__ - Example script on how to run picard BedToIntervalList (format needed for run_hs_metrics.sh).
