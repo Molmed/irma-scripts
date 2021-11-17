@@ -15,5 +15,5 @@ source activate NGI
 export NXF_WORK=_ANALYSISDIR_/_PROJECT_/work
 
 methylseq -resume --genome _GENOME_ \
-    --reads '_DATADIR_/merged_fastqs__PROJECT_/*_R{1,2}.fastq.gz' \
+    --input '_DATADIR_/merged_fastqs__PROJECT_/*_R{1,2}.fastq.gz' \
     --outdir _ANALYSISDIR_/_PROJECT_/results
