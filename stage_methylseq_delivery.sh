@@ -18,7 +18,7 @@ ANALYSIS_ROOT='/proj/ngi2016001/nobackup/NGI/ANALYSIS'
 STAGING_DIR="${STAGING_ROOT}/${PROJECT}"
 ANALYSIS_DIR="${ANALYSIS_ROOT}/${PROJECT}"
 
-README_LOCATION='/proj/ngi2016001/nobackup/private/workspace_sarek/README/'
+README_LOCATION='/proj/ngi2016001/nobackup/NGI/DELIVERY/README'
 README_NAME='METHYLSEQ_README.md'
 
 #The location of the multiqc report in ANALYSIS_DIR, copied to seqsummaries 
