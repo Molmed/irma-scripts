@@ -213,6 +213,16 @@ if __name__ == '__main__':
         help='Two-column, tab-separated file with delivered runfolders and delivery dates, e.g. '
              'extracted from arteria')
     parser.add_argument(
+        '--project-path',
+        required=False,
+        default="/proj/ngi2016001/nobackup/NGI/ANALYSIS",
+        help='The path to the analyzed project directories. (default: %(default)s).')
+    parser.add_argument(
+        '--runfolder-path',
+        required=False,
+        default="/proj/ngi2016001/incoming",
+        help='The path to the runfolders. (default: %(default)s).')
+    parser.add_argument(
         '--irma-end-date',
         required=False,
         default="220331",
@@ -226,17 +236,19 @@ if __name__ == '__main__':
         help='The grace period in days to keep data after delivery (default: %(default)s days).')
 
     args = parser.parse_args()
-    project = args.project
-    genome = args.genome
-    pipeline = args.pipeline
-    base_path = args.base_path
-
     project_date_file = args.projects
     runfolder_date_file = args.runfolders
+    project_path = args.project_path
+    runfolder_path = args.runfolder_path
     irma_end_date = datetime.datetime.strptime(args.irma_end_date, "%y%m%d")
     grace_period = int(args.grace_period)
     file_lists = sort_projects_and_runfolders(
-      project_date_file, runfolder_date_file, irma_end_date, grace_period)
+        project_date_file,
+        runfolder_date_file,
+        irma_end_date,
+        grace_period,
+        project_path=project_path,
+        runfolder_path=runfolder_path)
     pprint.pprint(file_lists)
 
 
