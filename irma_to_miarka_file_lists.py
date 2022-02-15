@@ -2,19 +2,20 @@ import argparse
 import datetime
 import os
 import pprint
-import sys
+import string
 import tempfile
 
 
 from typing import List, Callable, Tuple, Optional
 
+min_access_time = datetime.datetime(year=2016, month=1, day=1)
 
 
 def last_access_in_path(fpath: str) -> datetime.datetime:
     # recursively find the last access time for a file under a path
+    a_times = [min_access_time]
     if os.path.isfile(fpath):
-        return datetime.datetime.fromtimestamp(os.stat(fpath).st_atime)
-    a_times = []
+        return datetime.datetime.fromtimestamp(os.stat(fpath, follow_symlinks=False).st_atime)
     for dirpath, dirnames, filenames in os.walk(fpath):
         a_times.extend(
             list(
@@ -23,14 +24,17 @@ def last_access_in_path(fpath: str) -> datetime.datetime:
                     [last_access_in_path(os.path.join(dirpath, dname)) for dname in dirnames] +
                     [last_access_in_path(os.path.join(dirpath, fname)) for fname in filenames])))
 
-    return max(a_times) if a_times else None
+    return max(a_times)
 
 
 def parse_path_and_date_file(path_and_date_file: str) -> List[Tuple[str, datetime.datetime]]:
     # parse a 2-column text file with a name and date (YYMMDD)
+    path_and_dates = []
     with open(path_and_date_file, 'r') as fh:
-        out = [line.strip().split("\t") for line in fh]
-        return [(str(o[0]), datetime.datetime.strptime(o[1], "%y%m%d")) for o in out]
+        for line in fh:
+            out = line.strip().split("\t")
+            path_and_dates.append((str(out[0]), datetime.datetime.strptime(out[1], "%y%m%d")))
+    return path_and_dates
 
 
 def determine_date_cutoff(end_date: datetime.datetime, grace: int) -> datetime.datetime:
@@ -50,8 +54,21 @@ def do_exclude(
         date_cutoff: datetime.datetime,
         meta_path_and_dates: List[Tuple[str, datetime.datetime]]) -> bool:
 
+    msg = string.Template("${path} is ${action} because ${reason}")
+    reasons = [
+        f"{str(modification_date)} >= {str(date_cutoff)}",
+        f"{str(modification_date)} in meta data >= {str(date_cutoff)}",
+        "_do_not_remove in file name",
+        "_do_not_remove in companion file name",
+        "no condition to include file is met"
+    ]
+
     # if disk modification date is after date_cutoff, return false
     if modification_date >= date_cutoff:
+        print(msg.substitute(
+            path=fpath,
+            action="included",
+            reason=reasons[0]))
         return False
 
     fname = os.path.basename(fpath)
@@ -61,12 +78,20 @@ def do_exclude(
     try:
         ix = meta_paths.index(fname)
         if meta_path_and_dates[ix][1] >= date_cutoff:
+            print(msg.substitute(
+                path=fpath,
+                action="included",
+                reason=reasons[1]))
             return False
     except ValueError:
         pass
 
     # if the path is labeled with "_do_not_remove*", return false
     if do_not_remove(fpath):
+        print(msg.substitute(
+            path=fpath,
+            action="included",
+            reason=reasons[2]))
         return False
 
     # if a path is accompanied with a "_do_not_remove*"-file on disk or in the meta data,
@@ -76,9 +101,17 @@ def do_exclude(
     # strip the "_do_not_remove*" suffix from the names
     do_not_remove_names = [p[0:p.lower().index("_do_not_remove")] for p in do_not_remove_flags]
     if fname in do_not_remove_names:
+        print(msg.substitute(
+            path=fpath,
+            action="included",
+            reason=reasons[3]))
         return False
 
     # the path should not be kept because of date or "_do_not_remove*"-indicator, return True
+    print(msg.substitute(
+        path=fpath,
+        action="excluded",
+        reason=reasons[4]))
     return True
 
 
@@ -101,10 +134,23 @@ def include_exclude(
     return in_ex
 
 
-def get_path_and_dates(search_path: str) -> List[Tuple[str, datetime.datetime]]:
+def get_path_and_dates(
+        search_path: str,
+        cached_objects_and_dates: Optional[List[Tuple[str, datetime.datetime]]] = None)\
+        -> List[Tuple[str, datetime.datetime]]:
     # list the objects in the search_path along with the last access time for files beneath it
-    return [(obj, last_access_in_path(os.path.join(search_path, obj)))
-            for obj in os.listdir(search_path)]
+    path_and_dates = []
+    cached_obj_names = [obj_name for obj_name, obj_date in cached_objects_and_dates] \
+        if cached_objects_and_dates else []
+    for obj in os.listdir(search_path):
+        try:
+            path_and_dates.append((obj, cached_objects_and_dates[cached_obj_names.index(obj)][1]))
+            print(f"Using last access date for {os.path.join(search_path, obj)} from cache")
+        except ValueError:
+            print(f"Parsing last access date for {os.path.join(search_path, obj)}")
+            path_and_dates.append((obj, last_access_in_path(os.path.join(search_path, obj))))
+        print("\t".join(["", str(path_and_dates[-1][1])]))
+    return path_and_dates
 
 
 def _sort_objects(
@@ -112,7 +158,16 @@ def _sort_objects(
         object_date_file: str,
         date_cutoff: datetime.datetime) -> List[List[str]]:
     # sort objects to include and exclude under object_path based on object_date_file and disk
-    path_objects_and_dates = get_path_and_dates(object_path)
+    cached_object_date_file = object_path.replace("/", "_")
+    cached_object_date_file = f"{cached_object_date_file}.cached.txt"
+    cached_objects_and_dates = parse_path_and_date_file(cached_object_date_file) \
+        if os.path.exists(cached_object_date_file) else None
+    path_objects_and_dates = get_path_and_dates(object_path, cached_objects_and_dates)
+    with open(cached_object_date_file, "w") as fh:
+        for obj in path_objects_and_dates:
+            line = "\t".join([str(obj[0]), obj[1].strftime("%y%m%d")])
+            fh.write(f"{line}\n")
+
     meta_objects_and_dates = parse_path_and_date_file(object_date_file)
     in_ex = include_exclude(
         object_path, path_objects_and_dates, date_cutoff, meta_objects_and_dates)
@@ -142,7 +197,8 @@ def list_projects_in_runfolder(
     project_dir_path = os.path.join(runfolder_path, runfolder_project_dir)
     return list(filter(
       lambda p: os.path.isdir(os.path.join(project_dir_path, p)),
-      os.listdir(project_dir_path)))
+      os.listdir(project_dir_path))) if os.path.exists(project_dir_path) \
+                                        and os.path.isdir(project_dir_path) else []
 
 
 def include_runfolders_with_projects(
@@ -194,7 +250,7 @@ def sort_projects_and_runfolders(
         for j, typ in enumerate(["include", "exclude"]):
             outfile = f"{prefix}.{typ}.txt"
             with open(outfile, "w") as fh:
-                fh.writelines(map(lambda obj: f"{obj}\n", in_ex[i][j]))
+                fh.writelines(map(lambda obj: f"{os.path.join(search_path, obj)}\n", in_ex[i][j]))
             tf.append(outfile)
         in_ex_files.append((tf[0], tf[1]))
     return in_ex_files
@@ -484,6 +540,7 @@ class TestScript:
                 offset += 1
             dirname = os.path.join(dirname, str(offset))
             os.mkdir(dirname)
+        pprint.pp(last_access_in_path(workdir.name))
         assert last_access_in_path(workdir.name) == maxtime
 
     def test_do_exclude(
@@ -567,6 +624,27 @@ class TestScript:
             date_cutoff,
             [(os.path.basename(fpath), date_cutoff)])
 
+    def test_get_path_and_dates(
+            self,
+            create_projects: None,
+            project_path: str,
+            disk_projects_and_dates: List[Tuple[str, datetime.datetime]]) -> None:
+
+        # assert that the expected timestamps can be parsed from disk
+        observed_access = get_path_and_dates(project_path)
+        assert sorted(observed_access) == sorted(disk_projects_and_dates)
+
+        # touch some files and assert that supplied cached dates will be used instead
+        self.touch_file_with_atime(
+            disk_projects_and_dates[0][0],
+            disk_projects_and_dates[0][1] + datetime.timedelta(days=10))
+        self.touch_file_with_atime(
+            disk_projects_and_dates[1][0],
+            disk_projects_and_dates[1][1] - datetime.timedelta(days=10))
+        observed_access = get_path_and_dates(
+            project_path, cached_objects_and_dates=disk_projects_and_dates)
+        assert sorted(observed_access) == sorted(disk_projects_and_dates)
+
     def test_sort_projects(
             self,
             create_projects: None,
@@ -577,12 +655,22 @@ class TestScript:
             date_cutoff: datetime.datetime,
             expected_included_projects: List[str],
             expected_excluded_projects: List[str]) -> None:
-        observed_inc_ex = sort_projects(
-            project_path=project_path,
-            project_date_file=project_date_file,
-            date_cutoff=date_cutoff)
-        assert [sorted(observed_inc_ex[0]), sorted(observed_inc_ex[1])] == \
-               [expected_included_projects, expected_excluded_projects]
+
+        for _ in range(2):
+            observed_inc_ex = sort_projects(
+                project_path=project_path,
+                project_date_file=project_date_file,
+                date_cutoff=date_cutoff)
+            assert [sorted(observed_inc_ex[0]), sorted(observed_inc_ex[1])] == \
+                   [expected_included_projects, expected_excluded_projects]
+
+            # touch some files and assert that dates were cached in the first call
+            self.touch_file_with_atime(
+                disk_projects_and_dates[0][0],
+                disk_projects_and_dates[0][1] + datetime.timedelta(days=10))
+            self.touch_file_with_atime(
+                disk_projects_and_dates[1][0],
+                disk_projects_and_dates[1][1] - datetime.timedelta(days=10))
 
     def test_sort_runfolders(
             self,
@@ -598,12 +686,22 @@ class TestScript:
         expected_inc_ex = [expected_included_runfolders, expected_excluded_runfolders]
         expected_inc_ex[0].remove("RunfolderB")
         expected_inc_ex[1].append("RunfolderB")
-        observed_inc_ex = sort_runfolders(
-            runfolder_path=runfolder_path,
-            runfolder_date_file=runfolder_date_file,
-            date_cutoff=date_cutoff)
-        assert [sorted(observed_inc_ex[0]), sorted(observed_inc_ex[1])] == \
-               [expected_inc_ex[0], sorted(expected_inc_ex[1])]
+
+        for _ in range(2):
+            observed_inc_ex = sort_runfolders(
+                runfolder_path=runfolder_path,
+                runfolder_date_file=runfolder_date_file,
+                date_cutoff=date_cutoff)
+            assert [sorted(observed_inc_ex[0]), sorted(observed_inc_ex[1])] == \
+                   [expected_inc_ex[0], sorted(expected_inc_ex[1])]
+
+            # touch some files and assert that dates were cached in the first call
+            self.touch_file_with_atime(
+                disk_runfolders_and_dates[0][0],
+                disk_runfolders_and_dates[0][1] + datetime.timedelta(days=10))
+            self.touch_file_with_atime(
+                disk_runfolders_and_dates[1][0],
+                disk_runfolders_and_dates[1][1] - datetime.timedelta(days=10))
 
     def test_include_runfolders_with_projects(self, runfolder_path: str) -> None:
         for rf in ["A", "B", "C"]:
@@ -695,4 +793,5 @@ class TestScript:
 #  - projekt
 #  - runolders
 #tarballa private/log
+#tarballa private/db?
 #workspace folders for active members
