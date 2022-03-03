@@ -29,7 +29,7 @@ echo ""
 source ${VERSIONPATH}conf/sourceme_upps.sh
 source activate NGI
 
-nextflow run ${VERSIONPATH}sw/sarek/workflow/ ${PROFILE} --project ngi2016001 -c ${VERSIONPATH}conf/nextflow_irma_upps.config -c ${VERSIONPATH}conf/sarek_irma.config --custom_config_base ${VERSIONPATH}sw/sarek/configs/ --igenomes_ignore -resume ${TAG} ${GENOMESPARAM} --input ${SAMPLEFILE} --outDir ${OUTDIR} --tools haplotypecaller,snpeff --no_gatk_spark ${TARGETPARAM}
+nextflow run ${VERSIONPATH}sw/sarek/workflow/ ${PROFILE} --project ngi2016001 -c ${VERSIONPATH}conf/nextflow_miarka_upps.config -c ${VERSIONPATH}conf/sarek_miarka.config --custom_config_base ${VERSIONPATH}sw/sarek/configs/ --igenomes_ignore -resume ${TAG} ${GENOMESPARAM} --input ${SAMPLEFILE} --outDir ${OUTDIR} --tools haplotypecaller,snpeff --no_gatk_spark ${TARGETPARAM}
 
 
 echo "$?" >> ${EXITCODE}
