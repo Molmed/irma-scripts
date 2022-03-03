@@ -30,7 +30,7 @@ with open(inFile, 'r') as fileHandler:
         m = re.match(fcpattern, os.path.basename(os.path.dirname(line)))
         fcid = m.group(1) if m else "NA"
 
-        readgrp = f"{fcid}.{laneno}.{ssheet_idx}"# PU, Plattform unit. Will be used as read tag in BAM-files.
+        readgrp = f"{fcid}.{laneno}.{ssheet_idx}"  # PU, Plattform unit. Will be used as read tag in BAM-files.
 
         if readgrp not in sampleDict:
             sampleDict[readgrp] = [sample]

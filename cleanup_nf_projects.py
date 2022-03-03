@@ -62,7 +62,7 @@ for d in directory_list:
     print(d)
 
 while True:
-    yes_no = raw_input("Do you want to delete {} of data? [y/N]\n".format(human_readable_size)) or "N"
+    yes_no = input("Do you want to delete {} of data? [y/N]\n".format(human_readable_size)) or "N"
     if yes_no == "y":
         print("I will ghost these suckers, writing log to: {}".format(clean_up_log))
 
