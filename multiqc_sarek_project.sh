@@ -23,7 +23,7 @@ REPORT_FILENAME_QC=$PROJECT_ID"_multiqc_report_qc"
 
 if [ -z "$2" ]
   then
-    SCRIPTS_DIR="/lupus/ngi/production/latest/sw/upps_standalone_scripts"
+    SCRIPTS_DIR="/vulpes/ngi/production/latest/sw/upps_standalone_scripts"
   else
     SCRIPTS_DIR=$2
 fi

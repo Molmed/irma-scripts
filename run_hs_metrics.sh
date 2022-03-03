@@ -22,7 +22,7 @@ METRICS=$5
 OUTDIR="${ANALYSISDIR}/results/Reports/HsMetrics"
 
 # singularity container used by sarek, provides CollectHsMetrics
-CONTAINER=/lupus/ngi/containers/sarek/nfcore-sarek-2.6.1.img
+CONTAINER=/vulpes/ngi/containers/sarek/nfcore-sarek-2.6.1.img
 
 #
 # NOTE: This script is re-used for submitting sbatch jobs, in which case 5 parameters will be used. Users 

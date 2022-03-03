@@ -3,7 +3,7 @@
 use strict;
 use JSON;
 
-use lib "/lupus/ngi/production/latest/sw/arteria/siswrap_venv/deps/sisyphus/sisyphus-latest/lib";
+use lib "/vulpes/ngi/production/latest/sw/arteria/siswrap_venv/deps/sisyphus/sisyphus-latest/lib";
 use Molmed::Sisyphus::QStat;
 
 my $data;

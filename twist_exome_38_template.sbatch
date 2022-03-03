@@ -5,16 +5,16 @@
 #SBATCH -N 1
 #SBATCH -n 1
 #SBATCH -t 10-00:00:00
-#SBATCH -o "/lupus/proj_nobackup/ngi2016001/NGI/ANALYSIS/=PROJECT=/TwistExome.%j.out"
-#SBATCH -e "/lupus/proj_nobackup/ngi2016001/NGI/ANALYSIS/=PROJECT=/TwistExome.%j.err"
-#SBATCH -D "/lupus/proj_nobackup/ngi2016001/NGI/ANALYSIS/=PROJECT=/"
+#SBATCH -o "/proj/ngi2016001/nobackup/NGI/ANALYSIS/=PROJECT=/TwistExome.%j.out"
+#SBATCH -e "/proj/ngi2016001/nobackup/NGI/ANALYSIS/=PROJECT=/TwistExome.%j.err"
+#SBATCH -D "/proj/ngi2016001/nobackup/NGI/ANALYSIS/=PROJECT=/"
 #SBATCH --mail-user medsci-molmed-bioinfo@googlegroups.com
 #SBATCH --mail-type TIME_LIMIT_80
 TARGETDIR="/proj/ngi2016001/nobackup/NGI/ANALYSIS/resources/target_files_wes/"
-REFTSV="/lupus/proj_nobackup/ngi2016001/NGI/ANALYSIS/=PROJECT=/reference_tsv/"
+REFTSV="/proj/ngi2016001/nobackup/NGI/ANALYSIS/=PROJECT=/reference_tsv/"
 SAMPLEFILE="${REFTSV}=PROJECT=.tsv"
-OUTDIR="/lupus/proj_nobackup/ngi2016001/NGI/ANALYSIS/=PROJECT=/"
-VERSIONPATH="/lupus/ngi/production/v1.25/"
+OUTDIR="/proj/ngi2016001/nobackup/NGI/ANALYSIS/=PROJECT=/"
+VERSIONPATH="/vulpes/ngi/production/v1.25/"
 TARGETPARAM="--target_bed ${TARGETDIR}Twist_Exome_RefSeq_targets_hg38_100bp_padding.bed"
 GENOMEPARAM="--genome GRCh38"
 EXITCODE=${OUTDIR}"TwistExome.exit_code"
