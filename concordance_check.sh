@@ -20,7 +20,7 @@ EVAL=${SAMPLE}.eval.vcf.gz
 # First, re-call positions from the GVCF in order to produce HOM_REF calls
 java -jar /sw/apps/bioinfo/GATK/3.3.0/GenomeAnalysisTK.jar \
 -T GenotypeGVCFs \
--R /sw/data/uppnex/piper_references/2016-04-07/gatk_bundle/2.8/b37/human_g1k_v37.fasta \
+-R /vulpes/common/data/uppnex/piper_references/2016-04-07/gatk_bundle/2.8/b37/human_g1k_v37.fasta \
 --variant ${GVCF} \
 --out ${EVAL} \
 ${POSITIONS} \
@@ -29,7 +29,7 @@ ${POSITIONS} \
 # Next, calculate the concordance between the calls and the genotypes
 java -jar /sw/apps/bioinfo/GATK/3.3.0/GenomeAnalysisTK.jar \
 -T GenotypeConcordance \
--R /sw/data/uppnex/piper_references/2016-04-07/gatk_bundle/2.8/b37/human_g1k_v37.fasta \
+-R /vulpes/common/data/uppnex/piper_references/2016-04-07/gatk_bundle/2.8/b37/human_g1k_v37.fasta \
 -eval ${EVAL} \
 -comp ${GTFILE} \
 -sites ${SAMPLE}.discordant_sites \
