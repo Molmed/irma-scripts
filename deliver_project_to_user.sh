@@ -53,8 +53,8 @@ USR=$(cut -f 2 "$SUPRCREDS")
 PASS=$(cut -f 3 "$SUPRCREDS")
 
 # Command to launch the delivery script
-CMD=$(echo /lupus/ngi/production/latest/sw/anaconda/envs/ugc_delivery_script/bin/python \
-/lupus/ngi/production/latest/sw/ugc_delivery_src/deliver.py \
+CMD=$(echo /vulpes/ngi/production/latest/sw/anaconda/envs/ugc_delivery_script/bin/python \
+/vulpes/ngi/production/latest/sw/ugc_delivery_src/deliver.py \
 --supr_url $URL \
 --supr_api_user $USR \
 --supr_api_key $PASS \
