@@ -26,7 +26,7 @@ echo "Will create tsv file for sarek in ${ANALYSISDIR}${project}/reference_tsv."
 mkdir -p ${ANALYSISDIR}${project}/reference_tsv
 find ${DATADIR}${project} -name "*_R[1,2]_001*" | sort > ${ANALYSISDIR}${project}/reference_tsv/temp.txt
 
-python create_reference_tsv.py ${ANALYSISDIR}${project}/reference_tsv/temp.txt ${ANALYSISDIR}${project}/reference_tsv/${project}.tsv
+create_reference_tsv.py ${ANALYSISDIR}${project}/reference_tsv/temp.txt ${ANALYSISDIR}${project}/reference_tsv/${project}.tsv
 
 ## remove tmp file
 rm ${ANALYSISDIR}${project}/reference_tsv/temp.txt
