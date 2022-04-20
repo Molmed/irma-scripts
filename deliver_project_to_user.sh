@@ -62,6 +62,7 @@ CMD=$(echo /vulpes/ngi/production/latest/sw/anaconda/envs/ugc_delivery_script/bi
 --path $PROJPATH \
 --project $PROJECT \
 --email $EMAIL \
+--path-to-mover /usr/local/bin \
 $SENSITIVE $MEMBER_ARG)
 
 # Calculate MD5 sums of all delivered files
