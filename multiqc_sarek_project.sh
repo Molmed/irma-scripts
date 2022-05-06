@@ -39,7 +39,7 @@ check_errors()
   fi
 }
 
-source activate NGI_py3
+source activate NGI
 
 python $SCRIPTS_DIR"/sample_list_for_multiqc.py" --path $PROJECT_PATH
 check_errors $? "Something went wrong when making the sample list"
