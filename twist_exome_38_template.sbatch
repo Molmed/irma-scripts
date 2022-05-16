@@ -3,36 +3,52 @@
 #SBATCH -J TwistExome_=PROJECT=
 #SBATCH -p core
 #SBATCH -N 1
-#SBATCH -n 1
-#SBATCH -t 10-00:00:00
+#SBATCH -n 4
+#SBATCH -t 2-00:00:00
 #SBATCH -o "/proj/ngi2016001/nobackup/NGI/ANALYSIS/=PROJECT=/TwistExome.%j.out"
 #SBATCH -e "/proj/ngi2016001/nobackup/NGI/ANALYSIS/=PROJECT=/TwistExome.%j.err"
 #SBATCH -D "/proj/ngi2016001/nobackup/NGI/ANALYSIS/=PROJECT=/"
 #SBATCH --mail-user medsci-molmed-bioinfo@googlegroups.com
 #SBATCH --mail-type TIME_LIMIT_80
-TARGETDIR="/proj/ngi2016001/nobackup/NGI/ANALYSIS/resources/target_files_wes/"
-REFTSV="/proj/ngi2016001/nobackup/NGI/ANALYSIS/=PROJECT=/reference_tsv/"
-SAMPLEFILE="${REFTSV}=PROJECT=.tsv"
-OUTDIR="/proj/ngi2016001/nobackup/NGI/ANALYSIS/=PROJECT=/"
-VERSIONPATH="/vulpes/ngi/production/v22.03/"
-TARGETPARAM="--target_bed ${TARGETDIR}Twist_Exome_RefSeq_targets_hg38_100bp_padding.bed"
-GENOMEPARAM="--genome GRCh38"
-EXITCODE=${OUTDIR}"TwistExome.exit_code"
+
+PROJDIR="/proj/ngi2016001/nobackup/NGI/ANALYSIS/=PROJECT="
+TARGETDIR="/proj/ngi2016001/nobackup/NGI/ANALYSIS/resources/target_files_wes"
+OUTDIR="${PROJDIR}"
+VERSIONPATH="/vulpes/ngi/=PATHENV=/=VERSION="
+
+REFTSV="${PROJDIR}/reference_tsv"
+SAMPLEFILE="${REFTSV}/=PROJECT=.tsv"
+EXITCODE=${OUTDIR}/"TwistExome.exit_code"
+RUNDEBUG=${OUTDIR}/"TwistExome.run_parameters"
+
+TARGETPARAM="--target_bed ${TARGETDIR}/Twist_Exome_RefSeq_targets_hg38_100bp_padding.bed"
+GENOMESPARAM="--genome GRCh38"
 PROFILE="-profile uppmax"
-TAG="--tag 2.6.1"
+TAG="--tag 2.7"
 
-date '+%Y-%m-%d %R:%S' > ${EXITCODE}
-date '+%Y-%m-%d %R:%S'
-cat ${OUTDIR}"twistexome.sbatch" >> ${EXITCODE}
-echo ""
+date '+%Y-%m-%d %R:%S' |tee ${RUNDEBUG}
+cat "${0}" >> ${RUNDEBUG}
+echo "" > ${EXITCODE}
 
-source ${VERSIONPATH}conf/sourceme_upps.sh
+source "${VERSIONPATH}/conf/sourceme_upps.sh"
 source activate NGI
 
-nextflow run ${VERSIONPATH}sw/sarek/workflow/ ${PROFILE} --project ngi2016001 -c ${VERSIONPATH}conf/nextflow_miarka_upps.config -c ${VERSIONPATH}conf/sarek_miarka.config --custom_config_base ${VERSIONPATH}sw/sarek/configs/ --igenomes_ignore -resume ${TAG} ${GENOMESPARAM} --input ${SAMPLEFILE} --outDir ${OUTDIR} --tools haplotypecaller,snpeff --no_gatk_spark ${TARGETPARAM}
+nextflow run \
+  "${VERSIONPATH}/sw/sarek/workflow/" \
+    "${PROFILE}" \
+    --project ngi2016001 \
+    -c "${VERSIONPATH}/conf/nextflow_miarka_upps.config" \
+    -c "${VERSIONPATH}/conf/sarek_miarka.config" \
+    -resume \
+    "${TAG}" \
+    "${GENOMESPARAM}" \
+    --input "${SAMPLEFILE}" \
+    --outDir "${OUTDIR}" \
+    --tools haplotypecaller,snpeff \
+    --no_gatk_spark \
+    "${TARGETPARAM}" \
+    --generate_gvcf
 
-
-echo "$?" >> ${EXITCODE}
-date '+%Y-%m-%d %R:%S' >> ${EXITCODE}
-date '+%Y-%m-%d %R:%S'
+echo "$?" > ${EXITCODE}
+date '+%Y-%m-%d %R:%S' |tee -a ${RUNDEBUG}
 
