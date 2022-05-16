@@ -24,7 +24,7 @@ RUNDEBUG=${OUTDIR}/"TwistExome.run_parameters"
 TARGETPARAM="--target_bed ${TARGETDIR}/Twist_Exome_RefSeq_targets_hg38_100bp_padding.bed"
 GENOMESPARAM="--genome GRCh38"
 PROFILE="-profile uppmax"
-SAREKTAG="$(sed -nre 's/^sarek: (.*)$/\1/p' "${VERSIONPATH}/resources/deployed_tools.upps.version")"
+SAREKTAG="=SAREKTAG="
 
 date '+%Y-%m-%d %R:%S' |tee ${RUNDEBUG}
 cat "${0}" >> ${RUNDEBUG}

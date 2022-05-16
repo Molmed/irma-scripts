@@ -23,8 +23,9 @@ fi
 
 PATHENV="$(basename "$(dirname "$(readlink -f "${VERSIONPATH}")")")"
 VERSION="$(basename "$(readlink -f "${VERSIONPATH}")")"
+SAREKTAG="$(sed -nre 's/^sarek: (.*)$/\1/p' "${VERSIONPATH}/resources/deployed_tools.upps.version")"
 
-echo "${PROJECT} ${PATHENV} ${VERSION}"
+echo "${PROJECT} ${PATHENV} ${VERSION} ${SAREKTAG}"
 SCRIPTFILE="${ANALYSISDIR}/${PROJECT}/twistexome.sbatch"
 
 #  generate corresponding sbatch file using
@@ -32,6 +33,7 @@ sed \
   -e "s/=PROJECT=/${PROJECT}/g" \
   -e "s/=PATHENV=/${PATHENV}/g" \
   -e "s/=VERSION=/${VERSION}/g" \
+  -e "s/=SAREKTAG=/${SAREKTAG}/g" \
   "${TEMPLATE}" > "${SCRIPTFILE}"
 
 echo
