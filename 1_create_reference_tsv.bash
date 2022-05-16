@@ -6,7 +6,8 @@ NGIDIR="/proj/ngi2016001/nobackup/NGI"
 DATADIR="${NGIDIR}/DATA"
 ANALYSISDIR="${NGIDIR}/ANALYSIS"
 
-if [[ $# -eq 1 ]] ; then
+if [[ $# -eq 1 ]]
+then
   project=$1
 else
   echo
@@ -18,7 +19,8 @@ fi
 
 echo "     Project: ${project}"
 
-if [ ! -d "${DATADIR}/${project}" ]; then
+if [ ! -d "${DATADIR}/${project}" ]
+then
   echo "${DATADIR}/${project} does not exist, will exit."
   exit 0
 fi

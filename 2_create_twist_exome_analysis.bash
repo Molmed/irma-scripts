@@ -5,9 +5,10 @@ TEMPLATE="${SCRIPTSDIR}/twist_exome_38_template.sbatch"
 ANALYSISDIR="/proj/ngi2016001/nobackup/NGI/ANALYSIS"
 
 PROJECT=$1
-VERSIONPATH="${2:-/vulpes/ngi/production/lastest}"
+VERSIONPATH="${2:-/vulpes/ngi/production/latest}"
 
 if [[ -z "${PROJECT}" ]]
+then
   echo
   echo "   This script requires at least one parameter, project:"
   echo "     $>bash 2_create_twist_exome_analysis.bash <project>"
@@ -20,8 +21,8 @@ if [[ -z "${PROJECT}" ]]
   exit 0
 fi
 
-PATHENV="$(basename $(dirname $(readlink -f "${VERSIONPATH}")))"
-VERSION="$(basename $(readlink -f "${VERSIONPATH}"))"
+PATHENV="$(basename "$(dirname "$(readlink -f "${VERSIONPATH}")")")"
+VERSION="$(basename "$(readlink -f "${VERSIONPATH}")")"
 
 echo "${PROJECT} ${PATHENV} ${VERSION}"
 SCRIPTFILE="${ANALYSISDIR}/${PROJECT}/twistexome.sbatch"
@@ -31,7 +32,7 @@ sed \
   -e "s/=PROJECT=/${PROJECT}/g" \
   -e "s/=PATHENV=/${PATHENV}/g" \
   -e "s/=VERSION=/${VERSION}/g" \
-  ${TEMPLATE} > ${SCRIPTFILE}
+  "${TEMPLATE}" > "${SCRIPTFILE}"
 
 echo
 echo "  check that the batch file looks ok and start the analysis by running"
