@@ -8,7 +8,7 @@
 #SBATCH -o _ANALYSISDIR_/_PROJECT_/logs/rnaseq_%j.log
 
 # Source NGI environment
-source /vulpes/ngi/production/latest/conf/sourceme_upps.sh
+source _ENVPATH_/conf/sourceme_upps.sh
 source activate NGI
 
 #set Nextflow env variables
