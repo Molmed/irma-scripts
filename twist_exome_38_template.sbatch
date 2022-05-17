@@ -13,7 +13,7 @@
 
 PROJDIR="/proj/ngi2016001/nobackup/NGI/ANALYSIS/=PROJECT="
 TARGETDIR="/proj/ngi2016001/nobackup/NGI/ANALYSIS/resources/target_files_wes"
-OUTDIR="${PROJDIR}"
+OUTDIR="${PROJDIR}/results"
 VERSIONPATH="/vulpes/ngi/=PATHENV=/=VERSION="
 
 REFTSV="${PROJDIR}/reference_tsv"
@@ -43,7 +43,7 @@ nextflow run \
     --tag "${SAREKTAG}" \
     "${GENOMESPARAM}" \
     --input "${SAMPLEFILE}" \
-    --outDir "${OUTDIR}" \
+    --outdir "${OUTDIR}" \
     --tools haplotypecaller,snpeff \
     --no_gatk_spark \
     "${TARGETPARAM}" \
