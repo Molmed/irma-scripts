@@ -18,3 +18,6 @@ rnaseq -resume _CONFIG_ --genome _GENOME_ \
     --input '_DATADIR_/merged_fastqs__PROJECT_/*_R{1,2}.fastq.gz' \
     --outdir _ANALYSISDIR_/_PROJECT_/results --reverse-stranded \
     --clip_r1 1 --clip_r2 1 --three_prime_clip_r1 1 --three_prime_clip_r2 1 _EXTRAARGS_
+
+# some files get very restrictive permissions, so change them
+chgrp -R ngi2016001 _ANALYSISDIR_/_PROJECT_/results/pipeline_info

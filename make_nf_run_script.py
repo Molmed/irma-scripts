@@ -27,11 +27,11 @@ extra_args = ""
 
 # Create log and scripts folder (if not already created)
 for d in [scripts_path, logs_path]:
-  os.system(f"mkdir -p {d}")
+    os.system(f"mkdir -p {d}")
 
 # Handle gencode for GRCh38
 if pipeline == 'rnaseq' and genome == 'GRCh38':
-  extra_args = "--gencode"
+    extra_args = "--gencode"
 
 # Copy template to scripts folder
 os.system(f"cp {template_path}/{pipeline}_template {scripts_path}/run_analysis.sh")
@@ -45,7 +45,7 @@ for srch, rplc in [
   ("_DATADIR_", data_path),
   ("_CONFIG_", f"-c {config_path}"),
   ("_EXTRAARGS_", f"{extra_args}")]:
-  sed_cmd = f"{sed_cmd} -e 's#{srch}#{rplc}#g'"
+    sed_cmd = f"{sed_cmd} -e 's#{srch}#{rplc}#g'"
 
 os.system(f"{sed_cmd} {scripts_path}/run_analysis.sh")
 
