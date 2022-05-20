@@ -45,7 +45,6 @@ nextflow run \
     --input "${SAMPLEFILE}" \
     --outdir "${OUTDIR}" \
     --tools haplotypecaller,snpeff \
-    --no_gatk_spark \
     "${TARGETPARAM}" \
     --generate_gvcf
 
