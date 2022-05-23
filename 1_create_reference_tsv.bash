@@ -2,10 +2,12 @@
 # This script will make a reference tsv for a specific project in /proj/ngi2016001/nobackup/NGI/DATA/<project>
 # Will create tsv file for sarek in /proj/ngi2016001/nobackup/NGI/ANALYSIS/<project>/reference_tsv
 
-DATADIR="/proj/ngi2016001/nobackup/NGI/DATA/"
-ANALYSISDIR="/proj/ngi2016001/nobackup/NGI/ANALYSIS/"
+NGIDIR="/proj/ngi2016001/nobackup/NGI"
+DATADIR="${NGIDIR}/DATA"
+ANALYSISDIR="${NGIDIR}/ANALYSIS"
 
-if [[ $# -eq 1 ]] ; then
+if [[ $# -eq 1 ]]
+then
   project=$1
 else
   echo
@@ -17,18 +19,22 @@ fi
 
 echo "     Project: ${project}"
 
-if [ ! -d "${DATADIR}${project}" ]; then
-  echo "${DATADIR}${project} does not exist, will exit."
+if [ ! -d "${DATADIR}/${project}" ]
+then
+  echo "${DATADIR}/${project} does not exist, will exit."
   exit 0
 fi
-echo "Will create tsv file for sarek in ${ANALYSISDIR}${project}/reference_tsv."
 
-mkdir -p ${ANALYSISDIR}${project}/reference_tsv
-find ${DATADIR}${project} -name "*_R[1,2]_001*" | sort > ${ANALYSISDIR}${project}/reference_tsv/temp.txt
+OUTDIR="${ANALYSISDIR}/${project}/reference_tsv"
+OUTFILE="${project}.tsv"
+echo "Will create ${OUTFILE} for sarek in ${OUTDIR}"
 
-create_reference_tsv.py ${ANALYSISDIR}${project}/reference_tsv/temp.txt ${ANALYSISDIR}${project}/reference_tsv/${project}.tsv
+mkdir -p "${OUTDIR}"
+find "${DATADIR}/${project}" -name "*_R[1,2]_001*" | sort > "${OUTDIR}/temp.txt"
+
+create_reference_tsv.py "${OUTDIR}/temp.txt" "${OUTDIR}/${OUTFILE}"
 
 ## remove tmp file
-rm ${ANALYSISDIR}${project}/reference_tsv/temp.txt
+rm "${OUTDIR}/temp.txt"
 
-echo "Inspect ${ANALYSISDIR}${project}/reference_tsv/${project}.tsv and correct any errors detected."
+echo "Inspect ${OUTDIR}/${OUTFILE} and correct any errors detected."
