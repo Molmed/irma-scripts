@@ -36,7 +36,7 @@ SCRIPTFILE="${PROJDIR}/scripts/twistexome.sbatch"
 
 #  generate corresponding sbatch file using
 sed \
-  -e "s/=PROJDIR=/${PROJDIR}/g" \
+  -e "s#=PROJDIR=#${PROJDIR}#g" \
   -e "s/=PROJECT=/${PROJECT}/g" \
   -e "s/=PATHENV=/${PATHENV}/g" \
   -e "s/=VERSION=/${VERSION}/g" \
