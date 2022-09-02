@@ -5,30 +5,30 @@
 #SBATCH -N 1
 #SBATCH -n 4
 #SBATCH -t 2-00:00:00
-#SBATCH -o "/proj/ngi2016001/nobackup/NGI/ANALYSIS/=PROJECT=/TwistExome.%j.out"
-#SBATCH -e "/proj/ngi2016001/nobackup/NGI/ANALYSIS/=PROJECT=/TwistExome.%j.err"
-#SBATCH -D "/proj/ngi2016001/nobackup/NGI/ANALYSIS/=PROJECT=/"
+#SBATCH -o "=PROJDIR=/logs/twistexome.%j.out"
+#SBATCH -e "=PROJDIR=/logs/twistexome.%j.err"
+#SBATCH -D "=PROJDIR="
 #SBATCH --mail-user medsci-molmed-bioinfo@googlegroups.com
 #SBATCH --mail-type TIME_LIMIT_80
 
-PROJDIR="/proj/ngi2016001/nobackup/NGI/ANALYSIS/=PROJECT="
-TARGETDIR="/proj/ngi2016001/nobackup/NGI/ANALYSIS/resources/target_files_wes"
+PROJDIR="=PROJDIR="
+TARGETDIR="${PROJDIR}/../resources/target_files_wes/human_comprehensive_exome"
 OUTDIR="${PROJDIR}/results"
 VERSIONPATH="/vulpes/ngi/=PATHENV=/=VERSION="
 
 REFTSV="${PROJDIR}/reference_tsv"
-SAMPLEFILE="${REFTSV}/=PROJECT=.tsv"
-EXITCODE=${OUTDIR}/"TwistExome.exit_code"
-RUNDEBUG=${OUTDIR}/"TwistExome.run_parameters"
+SAMPLEFILE="${REFTSV}/=PROJECT=.SarekGermlineAnalysis.tsv"
+EXITCODE="${PROJDIR}/twistexome.exit_code"
+RUNDEBUG="${PROJDIR}/logs/twistexome.run_parameters"
 
-TARGETPARAM="--target_bed ${TARGETDIR}/Twist_Exome_RefSeq_targets_hg38_100bp_padding.bed"
+TARGETPARAM="--target_bed ${TARGETDIR}/Twist_Comprehensive_Exome_Covered_Targets_hg38_100bp_padding.bed"
 GENOMESPARAM="--genome GRCh38"
 PROFILE="-profile uppmax"
 SAREKTAG="=SAREKTAG="
 
-date '+%Y-%m-%d %R:%S' |tee ${RUNDEBUG}
-cat "${0}" >> ${RUNDEBUG}
-echo "" > ${EXITCODE}
+date '+%Y-%m-%d %R:%S' |tee "${RUNDEBUG}"
+cat "${0}" >> "${RUNDEBUG}"
+echo "" > "${EXITCODE}"
 
 source "${VERSIONPATH}/conf/sourceme_upps.sh"
 source activate NGI
@@ -38,7 +38,7 @@ nextflow run \
     "${PROFILE}" \
     --project ngi2016001 \
     -c "${VERSIONPATH}/conf/nextflow_miarka_upps.config" \
-    -c "${VERSIONPATH}/conf/sarek_miarka.config" \
+    -c "${VERSIONPATH}/conf/sarek_upps.config" \
     -resume \
     --tag "${SAREKTAG}" \
     "${GENOMESPARAM}" \
@@ -48,6 +48,5 @@ nextflow run \
     "${TARGETPARAM}" \
     --generate_gvcf
 
-echo "$?" > ${EXITCODE}
-date '+%Y-%m-%d %R:%S' |tee -a ${RUNDEBUG}
-
+echo "$?" > "${EXITCODE}"
+date '+%Y-%m-%d %R:%S' |tee -a "${RUNDEBUG}"

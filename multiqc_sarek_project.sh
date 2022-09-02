@@ -18,7 +18,7 @@ PROJECT_PATH=$1
 PROJECT_ID=$(basename $PROJECT_PATH)
 REPORT_FILENAME=$PROJECT_ID"_multiqc_report"
 REPORT_FILENAME_QC=$PROJECT_ID"_multiqc_report_qc"
-REPORT_OUTDIR="${PROJECT_PATH}/multiqc_ngi"
+REPORT_OUTDIR="${PROJECT_PATH}/results/multiqc_ngi"
 
 if [ -z "$2" ]
   then
@@ -49,7 +49,7 @@ mkdir -p "$mqc_content"
 mv "$PROJECT_PATH/sample_list_mqc.yaml" "$mqc_content/"
 
 # Generate custom content based on the pipeline_info output
-infodir="$(find "$PROJECT_PATH" -mindepth 3 -maxdepth 4 -type d -name "pipeline_info" -a -path "*/results/*" -print -quit)"
+infodir="$(find "$PROJECT_PATH" -mindepth 2 -maxdepth 4 -type d -name "pipeline_info" -a -path "*/results/*" -print -quit)"
 if [ -e "${infodir}" ]
 then
   python "$SCRIPTS_DIR/multiqc_pipeline_info.py" "$infodir" "$mqc_content"
@@ -58,7 +58,7 @@ fi
 # Gather a list of input dirs to give to MultiQC, exclude report directories not placed directly under the main sample
 # (i.e. reports for individual lanes etc. will be excluded)
 sed -nre 's/^.*<li>([^<]+)<\/li>.*$/\1/p' "$mqc_content/sample_list_mqc.yaml" > "$mqc_content/sample_names.txt"
-INPUT_DIRS="$mqc_content $(find "$PROJECT_PATH" -mindepth 4 -maxdepth 5 -type d -name "${PROJECT_ID}*" -a -path "*/Reports/*" |grep -f <(while read s; do echo "$s\$"; done < "$mqc_content/sample_names.txt") | paste -s -d' ')"
+INPUT_DIRS="$mqc_content $(find "$PROJECT_PATH" -mindepth 3 -maxdepth 5 -type d -name "${PROJECT_ID}*" -a -path "*/Reports/*" |grep -f <(while read s; do echo "$s\$"; done < "$mqc_content/sample_names.txt") | paste -s -d' ')"
 
 # submit MultiQC jobs to SLURM
 SBATCH_A=ngi2016001
