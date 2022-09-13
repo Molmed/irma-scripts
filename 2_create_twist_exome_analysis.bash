@@ -18,7 +18,7 @@ then
   echo "     $>bash 2_create_twist_exome_analysis.bash <project> <environment>"
   echo " ex: bash 2_create_twist_exome_analysis.bash AB-1234 /vulpes/ngi/production/v22.05"
   echo
-  exit 0
+  exit 1
 fi
 
 PATHENV="$(basename "$(dirname "$(readlink -f "${VERSIONPATH}")")")"
@@ -26,10 +26,17 @@ VERSION="$(basename "$(readlink -f "${VERSIONPATH}")")"
 SAREKTAG="$(sed -nre 's/^sarek: (.*)$/\1/p' "${VERSIONPATH}/resources/deployed_tools.upps.version")"
 
 echo "${PROJECT} ${PATHENV} ${VERSION} ${SAREKTAG}"
-SCRIPTFILE="${ANALYSISDIR}/${PROJECT}/twistexome.sbatch"
+
+PROJDIR="${ANALYSISDIR}/${PROJECT}"
+
+mkdir -p "${PROJDIR}/logs"
+mkdir -p "${PROJDIR}/scripts"
+
+SCRIPTFILE="${PROJDIR}/scripts/twistexome.sbatch"
 
 #  generate corresponding sbatch file using
 sed \
+  -e "s#=PROJDIR=#${PROJDIR}#g" \
   -e "s/=PROJECT=/${PROJECT}/g" \
   -e "s/=PATHENV=/${PATHENV}/g" \
   -e "s/=VERSION=/${VERSION}/g" \

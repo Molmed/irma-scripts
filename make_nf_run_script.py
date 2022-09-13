@@ -42,6 +42,11 @@ for d in [scripts_path, logs_path]:
 if pipeline == 'rnaseq' and genome == 'GRCh38':
     extra_args = "--gencode"
 
+# Create a samplesheet
+if pipeline == 'rnaseq':
+    os.system(
+        f"create_nf_samplesheet.sh {project} {analysis_path} {data_path} {resolved_env_path}")
+
 # Copy template to scripts folder
 os.system(f"cp {template_path}/{pipeline}_template {scripts_path}/run_analysis.sh")
 

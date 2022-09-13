@@ -4,7 +4,6 @@
 #SBATCH -n 2
 #SBATCH -t 10-00:00:00
 #SBATCH -J rnaseq__PROJECT_
-#SBATCH -e _ANALYSISDIR_/_PROJECT_/logs/rnaseq_%j.log
 #SBATCH -o _ANALYSISDIR_/_PROJECT_/logs/rnaseq_%j.log
 
 # Source NGI environment
@@ -15,9 +14,10 @@ source activate NGI
 export NXF_WORK=_ANALYSISDIR_/_PROJECT_/work
 
 rnaseq -resume _CONFIG_ --genome _GENOME_ \
-    --input '_DATADIR_/merged_fastqs__PROJECT_/*_R{1,2}.fastq.gz' \
-    --outdir _ANALYSISDIR_/_PROJECT_/results --reverse-stranded \
+    --input _ANALYSISDIR_/_PROJECT_/_PROJECT_.SampleSheet.csv \
+    --outdir _ANALYSISDIR_/_PROJECT_/results \
     --clip_r1 1 --clip_r2 1 --three_prime_clip_r1 1 --three_prime_clip_r2 1 _EXTRAARGS_
 
 # some files get very restrictive permissions, so change them
-chgrp -R ngi2016001 _ANALYSISDIR_/_PROJECT_/results/pipeline_info
+chmod 660 _ANALYSISDIR_/_PROJECT_/results/pipeline_info/*
+chgrp ngi2016001 _ANALYSISDIR_/_PROJECT_/results/pipeline_info/*

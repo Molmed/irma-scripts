@@ -14,7 +14,7 @@ else
   echo "     This script requires the parameter <project>, run as"
   echo "     $> 1_create_reference_tsv.bash <project>"
   echo
-  exit 0
+  exit 1
 fi
 
 echo "     Project: ${project}"
@@ -22,11 +22,11 @@ echo "     Project: ${project}"
 if [ ! -d "${DATADIR}/${project}" ]
 then
   echo "${DATADIR}/${project} does not exist, will exit."
-  exit 0
+  exit 1
 fi
 
 OUTDIR="${ANALYSISDIR}/${project}/reference_tsv"
-OUTFILE="${project}.tsv"
+OUTFILE="${project}.SarekGermlineAnalysis.tsv"
 echo "Will create ${OUTFILE} for sarek in ${OUTDIR}"
 
 mkdir -p "${OUTDIR}"

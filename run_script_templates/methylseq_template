@@ -4,7 +4,6 @@
 #SBATCH -n 2
 #SBATCH -t 10-00:00:00
 #SBATCH -J methylSeq__PROJECT_
-#SBATCH -e _ANALYSISDIR_/_PROJECT_/logs/methylSeq_%j.log
 #SBATCH -o _ANALYSISDIR_/_PROJECT_/logs/methylSeq_%j.log
 
 # Source NGI environment
@@ -19,4 +18,5 @@ methylseq -resume --genome _GENOME_ \
     --outdir _ANALYSISDIR_/_PROJECT_/results
 
 # some files get very restrictive permissions, so change them
-chgrp -R ngi2016001 _ANALYSISDIR_/_PROJECT_/results/pipeline_info
+chmod 660 _ANALYSISDIR_/_PROJECT_/results/pipeline_info/*
+chgrp ngi2016001 _ANALYSISDIR_/_PROJECT_/results/pipeline_info/*
