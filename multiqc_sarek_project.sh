@@ -18,7 +18,7 @@ PROJECT_PATH=$1
 PROJECT_ID=$(basename $PROJECT_PATH)
 REPORT_FILENAME=$PROJECT_ID"_multiqc_report"
 REPORT_FILENAME_QC=$PROJECT_ID"_multiqc_report_qc"
-REPORT_OUTDIR="${PROJECT_PATH}/results/multiqc_ngi"
+REPORT_OUTDIR="${PROJECT_PATH}/multiqc_ngi"
 
 if [ -z "$2" ]
   then
