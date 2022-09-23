@@ -35,17 +35,17 @@ source activate NGI
 
 nextflow run \
   "${VERSIONPATH}/sw/sarek/workflow/" \
-    "${PROFILE}" \
+    ${PROFILE} \
     --project ngi2016001 \
     -c "${VERSIONPATH}/conf/nextflow_miarka_upps.config" \
     -c "${VERSIONPATH}/conf/sarek_upps.config" \
     -resume \
     --tag "${SAREKTAG}" \
-    "${GENOMESPARAM}" \
+    ${GENOMESPARAM} \
     --input "${SAMPLEFILE}" \
     --outdir "${OUTDIR}" \
     --tools haplotypecaller,snpeff \
-    "${TARGETPARAM}" \
+    ${TARGETPARAM} \
     --generate_gvcf
 
 echo "$?" > "${EXITCODE}"
