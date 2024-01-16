@@ -14,6 +14,8 @@ parser.add_argument('--base-path', default=os.path.join("/proj", "ngi2016001", "
 parser.add_argument('--environment-path',
                     default=os.path.join("/vulpes", "ngi", "production", "latest"),
                     help='Path to the deployed environment (default: %(default)s)')
+parser.add_argument('--em-seq', action='store_true', default=False,
+                    help='Run Methylseq pipeline with --em-seq flag (default: %(default)s)')
 
 args = parser.parse_args()
 project = args.project
@@ -21,6 +23,7 @@ genome = args.genome
 pipeline = args.pipeline
 base_path = args.base_path
 environment_path = args.environment_path
+em_seq = args.em_seq
 
 analysis_path = os.path.join(base_path, "ANALYSIS")
 data_path = os.path.join(base_path, "DATA")
@@ -41,11 +44,27 @@ for d in [scripts_path, logs_path]:
 # Handle gencode for GRCh38
 if pipeline == 'rnaseq' and genome == 'GRCh38':
     extra_args = "--gencode"
+# Add EM-seq parameter
+if pipeline == 'methylseq' and em_seq:
+    extra_args = "--em_seq"
 
 # Create a samplesheet
-if pipeline == 'rnaseq':
+os.system(
+    f"create_nf_samplesheet.sh {project} {analysis_path} {data_path} {resolved_env_path}")
+if pipeline == 'methylseq':
+    # Remove the last column (strandedness) from samplesheet
+    samplesheet_file = os.path.join(
+        project_path,
+        f"{project}.SampleSheet.csv"
+    )
+    tmp_file = os.path.join(
+        project_path,
+        f".{project}.SampleSheet.csv.tmp"
+    )
     os.system(
-        f"create_nf_samplesheet.sh {project} {analysis_path} {data_path} {resolved_env_path}")
+        f"cut -f1,2,3 -d, {samplesheet_file} > {tmp_file} && "
+        f"mv {tmp_file} {samplesheet_file}"
+    )
 
 # Copy template to scripts folder
 os.system(f"cp {template_path}/{pipeline}_template {scripts_path}/run_analysis.sh")

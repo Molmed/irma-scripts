@@ -14,8 +14,8 @@ source activate NGI
 export NXF_WORK=_ANALYSISDIR_/_PROJECT_/work
 
 methylseq -resume --genome _GENOME_ \
-    --input '_DATADIR_/merged_fastqs__PROJECT_/*_R{1,2}.fastq.gz' \
-    --outdir _ANALYSISDIR_/_PROJECT_/results
+    --input _ANALYSISDIR_/_PROJECT_/_PROJECT_.SampleSheet.csv \
+    --outdir _ANALYSISDIR_/_PROJECT_/results _EXTRAARGS_
 
 # some files get very restrictive permissions, so change them
 chmod 660 _ANALYSISDIR_/_PROJECT_/results/pipeline_info/*
