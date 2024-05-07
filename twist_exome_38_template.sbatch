@@ -26,6 +26,8 @@ GENOMESPARAM="--genome GRCh38"
 PROFILE="-profile uppmax"
 SAREKTAG="=SAREKTAG="
 
+SAREKPATH="$(dirname "$(find "${VERSIONPATH}/sw/sarek" -name "main.nf" -print -quit)")"
+
 date '+%Y-%m-%d %R:%S' |tee "${RUNDEBUG}"
 cat "${0}" >> "${RUNDEBUG}"
 echo "" > "${EXITCODE}"
@@ -34,7 +36,7 @@ source "${VERSIONPATH}/conf/sourceme_upps.sh"
 source activate NGI
 
 nextflow run \
-  "${VERSIONPATH}/sw/sarek/workflow/" \
+  "${SAREKPATH}" \
     ${PROFILE} \
     --project ngi2016001 \
     -c "${VERSIONPATH}/conf/nextflow_miarka_upps.config" \

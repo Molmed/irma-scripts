@@ -28,7 +28,7 @@ mkdir -p ${FQDIR}
 
 find "${DATADIR}" -name "*.fastq.gz" -exec ln -s {} "${FQDIR}/" \;
 
-python "$ENVPATH/sw/rnaseq/workflow/bin/fastq_dir_to_samplesheet.py" \
+python "$(find "$ENVPATH/sw/rnaseq" -name "fastq_dir_to_samplesheet.py" -print -quit)" \
   --sanitise_name \
   --sanitise_name_index=1 \
   --strandedness=reverse \
