@@ -65,20 +65,22 @@ def parse_samplesheet(
     samplesheet, project, exclude_lane, exclude_sample, exclude_sampleID
 ):
     sample_info = {}
+
+    lane_i, sample_id_i, sample_name_i, description_i = None, None, None, None
+
     try:
         with open(samplesheet) as fin:
             samplesheet = csv.reader(fin)
-            # Skip first 20 lines to get to the header
-            for _ in range(20):
-                next(samplesheet)
-            header = next(samplesheet)
-
-            lane_i = header.index("Lane")
-            sample_id_i = header.index("Sample_ID")
-            sample_name_i = header.index("Sample_Name")
-            description_i = header.index("Description")
 
             for row in samplesheet:
+                if "[Data]" in row:
+                    header = next(samplesheet)
+                    lane_i = header.index("Lane")
+                    sample_id_i = header.index("Sample_ID")
+                    sample_name_i = header.index("Sample_Name")
+                    description_i = header.index("Description")
+                    continue
+
                 if project not in row:
                     continue
 
@@ -164,10 +166,10 @@ def remove_organized(organized_data):
 
 def clean_empty_parent_dirs(path):
     parent_dir = os.path.dirname(path)
-    if not os.listdir(parent_dir):
+    if len(os.listdir(parent_dir)) == 0:
         os.rmdir(parent_dir)
     grandparent_dir = os.path.dirname(parent_dir)
-    if not os.listdir(grandparent_dir):
+    if len(os.listdir(grandparent_dir)) == 0:
         os.rmdir(grandparent_dir)
 
 
@@ -198,7 +200,7 @@ def main():
     sample_info = parse_samplesheet(
         samplesheet, project, exclude_lane, exclude_sample, exclude_sampleID
     )
-    
+
     organize_files(sample_info, runfolder_path, project, data_path)
 
 
