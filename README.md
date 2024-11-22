@@ -41,3 +41,4 @@ Scans incoming for csv-files at most two folders down and greps for the given st
 * __charon_project_samples_status_update.sh__ - Script to get all samples in Charon for a supplied project and set the analysis_status to ANALYZED and the status to STALE.
 * __run_hs_metrics.sh__ - Run CollectHsMtrics for all recalibrated BAM files in a WES project.
 * __bed2interval_list.sh__ - Example script on how to run picard BedToIntervalList (format needed for run_hs_metrics.sh).
+* __organize_flowcell.py__ - Script to organize fastq files for a specific runfolder and project prior to analysis.
