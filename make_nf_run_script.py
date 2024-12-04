@@ -104,6 +104,4 @@ if pipeline == 'sarek':
 
 os.system(f"{sed_cmd} {scripts_path}/params.json")
 
-
-
 print(f"{scripts_path}/run_analysis.sh has been generated. Good luck with the analysis!")
