@@ -9,7 +9,7 @@ PIPELINE="$5"
 if [[ $# -ne 5 ]]
 then
   echo
-  echo "     This script requires the parameters <project name> <analysis path> <data path> <environment path> pipeline"
+  echo "     This script requires the parameters <project name> <analysis path> <data path> <environment path> <pipeline>"
   echo
   echo "       example:"
   echo "         $ create_nf_samplesheet.sh \\"
@@ -43,5 +43,8 @@ elif [[ $PIPELINE == "sarek" ]]
 then
   python create_sarek_samplesheet.py \
     ${FQDIR}" \
-    "${PROJDIR}/${PROJ}.SampleSheet.csv"      
+    "${PROJDIR}/${PROJ}.SampleSheet.csv"
+else
+  echo "Pipeline ${PIPELINE} not supported."
+  exit 1      
 fi
