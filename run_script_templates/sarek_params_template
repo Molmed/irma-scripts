@@ -1,0 +1,16 @@
+{
+    "input": "_PROJECTPATH_/_PROJECT_.SampleSheet.csv",
+    "outdir": "_PROJECTPATH_/results",
+    "wes": true,
+    "intervals": "/proj/ngi2016001/nobackup/NGI/ANALYSIS/resources/target_files_wes/human_comprehensive_exome/Twist_Comprehensive_Exome_Covered_Targets_hg38_100bp_padding.bed",
+    "tools": "haplotypecaller,deepvariant,snpeff",
+    "skip_tools": "haplotypecaller_filter",
+    "trim_fastq": false,
+    "split_fastq": 0,
+    "save_output_as_bam": false,
+    "genome": "_GENOME_",
+    "email_on_fail": "medsci-molmed-bioinfo@googlegroups.com",
+    "joint_germline": false,
+    "igenomes_ignore": false,
+    "snpeff_cache": "/sw/data/snpEff_data/5.1/miarka/data/"
+}
