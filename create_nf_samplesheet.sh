@@ -42,7 +42,7 @@ then
 elif [[ $PIPELINE == "sarek" ]]
 then
   python create_sarek_samplesheet.py \
-    ${FQDIR}" \
+    "${FQDIR}" \
     "${PROJDIR}/${PROJ}.SampleSheet.csv"
 else
   echo "Pipeline ${PIPELINE} not supported."
