@@ -37,7 +37,7 @@ def pipeline_report_file(d="."):
 
 
 def software_version_file(d="."):
-    return os.path.join(d, "software_versions.csv")
+    return os.path.join(d, "nf_core_sarek_software_mqc_versions.yml") # changed input file
 
 
 def pipeline_report_mqc(d="."):
@@ -53,7 +53,7 @@ def pipeline_report_pattern():
 
 
 def software_version_pattern():
-    return r'^\s*(\S+)\t+(.*\S)\s*$'
+    return r'^\s*(\S+): +(.*\S)\s*$' # Updated pattern to match yml format
 
 
 def parse_report_with_pattern(report_file, pattern):
