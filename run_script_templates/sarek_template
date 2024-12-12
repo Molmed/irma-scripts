@@ -1,0 +1,18 @@
+#!/bin/sh
+#SBATCH -A ngi2016001
+#SBATCH -p core
+#SBATCH -n 2
+#SBATCH -t 10-00:00:00
+#SBATCH -J sarek__PROJECT_
+#SBATCH -o _ANALYSISDIR_/_PROJECT_/logs/sarek_wgs_%j.log
+
+# Source NGI environment
+source _ENVPATH_/conf/sourceme_upps.sh
+source activate NGI
+
+#set Nextflow env variables
+export NXF_WORK=_ANALYSISDIR_/_PROJECT_/work
+
+sarek -resume \
+    -params-file _ANALYSISDIR_/_PROJECT_/scripts/params.json
+
