@@ -1,9 +1,5 @@
 extra_fn_clean_exts:
     - type: remove
-      pattern: HaplotypeCaller_
-    - type: remove
-      pattern: .recal
-    - type: remove
       pattern: _snpEff
 
 fn_ignore_files:
@@ -13,5 +9,22 @@ fn_ignore_files:
 fn_ignore_dirs:
     - 'work'
 
+remove_sections:
+    - 'mosdepth-coverage-per-contig-section'
+
 table_columns_visible:
     FastQC: False
+    Duplication: False
+    "≥ 10X": True
+    "Bcftools: Stats":
+        "Ts/Tv": False
+    "Samtools: stats":
+        "Error rate": False
+        "Non-primary": False
+
+table_sample_merge:
+  "MarkDuplicates": ".md"
+  "Recalibrated": ".recal"
+  "Custom stats": ".custom_stats"
+  "DeepVariant": ".deepvariant"
+  "HaplotypeCaller": ".haplotypecaller"
