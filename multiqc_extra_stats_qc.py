@@ -19,47 +19,50 @@ class QC:
         self.version = "v.25.0"  # Document version INS-00123
 
     def limits(self, metric):
-        if metric == "Coverage ≥10 X":
-            return self.cov_10_x
-        elif metric == "Coverage ≥30 X":
-            return self.cov_30_x
-        elif metric == "Unfiltered variants":
-            return self.variants
-        elif metric == "Average GC %":
-            return self.gc
-        elif metric == "% Mapped":
-            return self.percent_mapped
-        elif metric == "Average insert size":
-            return self.insert_size
-        else:
-            return ("N/A", "N/A")
+        match metric:
+            case "Coverage ≥10 X":
+                return self.cov_10_x
+            case "Coverage ≥30 X":
+                return self.cov_30_x
+            case "Unfiltered variants":
+                return self.variants
+            case "Average GC %":
+                return self.gc
+            case "% Mapped":
+                return self.percent_mapped
+            case "Average insert size":
+               return self.insert_size
+            case _:
+                return ("N/A", "N/A")
     
     def pretty_limits(self, metric):
         lt, ut = self.limits(metric)
-        if "Cov" in metric:
-            return f"≥ {lt} X"
-        elif metric == "Unfiltered variants":
-            return f"{lt / 1000000:.1f}-{ut / 1000000:.1f} M"
-        elif metric == "Average GC %":
-            return f"{lt}-{ut} %"
-        elif metric == "% Mapped":
-            return f"{lt} %"
-        elif metric == "Average insert size":
-            return f"{lt}-{ut} nt"
-        else:
-            return f"QC thresholds not found"
+        match metric:
+            case "Coverage ≥10 X" | "Coverage ≥10 X":
+                return f"≥ {lt} X"
+            case "Unfiltered variants":
+                return f"{lt / 1000000:.1f}-{ut / 1000000:.1f} M"
+            case "Average GC %":
+                return f"{lt}-{ut} %"
+            case "% Mapped":
+                return f"{lt} %"
+            case "Average insert size":
+                return f"{lt}-{ut} nt"
+            case _:
+                return f"QC thresholds not found"
     
     def pretty_val(self, metric, value):
-        if "Cov" in metric:
-            return f"{value} X"
-        elif metric == "Unfiltered variants":
-            return f"{value / 1000000:.1f} M"
-        elif metric in ["Average GC %", "% Mapped"]:
-            return f"{value} %"
-        elif metric == "Average insert size":
-            return f"{value} nt"
-        else:
-            return f"{value}"
+        match metric:
+            case "Coverage ≥10 X" | "Coverage ≥10 X":
+                return f"{value} X"
+            case "Unfiltered variants":
+                return f"{value / 1000000:.1f} M"
+            case  "Average GC %" | "% Mapped":
+                return f"{value} %"
+            case "Average insert size":
+                return f"{value} nt"
+            case _:
+                return f"{value}"
         
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -345,10 +348,12 @@ def main():
     qc_fail = check_qc(all_data, qc) 
     qc_out = QC_out(qc_fail, qc)
     extra_genstats = extra_genstats_out(all_data)
-
-    with open(os.path.join(analysis_dir, "QC_list_mqc.yaml"), "w") as fout:
+    
+    outdir = os.path.join(analysis_dir, "multiqc_qc_check"
+    os.mkdir(outdir)
+    with open(os.path.join(outdir, "QC_list_mqc.yaml"), "w") as fout:
         yaml.dump(qc_out, fout)
-    with open(os.path.join(analysis_dir, "extra_stats.yaml"), "w") as fout:
+                          with open(os.path.join(outdir, "extra_stats.yaml"), "w") as fout:
         yaml.dump(extra_genstats, fout)
 
 if __name__ == "__main__":
