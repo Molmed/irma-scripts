@@ -50,9 +50,9 @@ check_errors $? "Something went wrong when performing qc check"
 
 mqc_content="$PROJECT_PATH/multiqc_custom_content"
 qc_content="$PROJECT_PATH/multiqc_qc_check"
-mkdir -p "$mqc_content" "$qc_content"
+mkdir -p "$mqc_content"
 mv "$PROJECT_PATH/sample_list_mqc.yaml" "$mqc_content/"
-mv "$PROJECT_PATH/QC_list_mqc.yaml" "$PROJECT_PATH/extra_stats.yaml" "$qc_content"
+
 
 # Generate custom content based on the pipeline_info output
 infodir="$(find "$PROJECT_PATH" -mindepth 2 -maxdepth 4 -type d -name "pipeline_info" -a -path "*/results/*" -print -quit)"
@@ -64,7 +64,9 @@ fi
 # Gather a list of input dirs to give to MultiQC, exclude report directories not placed directly under the main sample
 # (i.e. reports for individual lanes etc. will be excluded)
 sed -nre 's/^.*<li>([^<]+)<\/li>.*$/\1/p' "$mqc_content/sample_list_mqc.yaml" > "$mqc_content/sample_names.txt"
-INPUT_DIRS="$mqc_content $(find "$PROJECT_PATH" -mindepth 3 -maxdepth 5 -type d -name "${PROJECT_ID}*" -a -path "*/reports/*" | grep -f <(while read s; do echo "$s\$"; done < "$mqc_content/sample_names.txt") | paste -s -d' ')"
+INPUT_DIRS=$(for sample in $(cat $mqc_content/sample_names.txt); do find "$PROJECT_PATH" -mindepth 3 -maxdepth 5 -type d -name $sample -a -path "*/reports/*"; done | paste -s -d' ')
+INPUT_DIRS+=" $mqc_content"
+QC_INPUT_DIRS="$INPUT_DIRS $qc_content"
 
 # submit MultiQC jobs to SLURM
 SBATCH_A=ngi2016001
@@ -87,7 +89,7 @@ sbatch -A ${SBATCH_A} -D "${SBATCH_D}" -n ${SBATCH_n} -t ${SBATCH_t} -J "${SBATC
   --zip-data-dir \
   --no-push \
   --interactive \
-  $INPUT_DIRS $qc_content"
+  $QC_INPUT_DIRS"
 
 SBATCH_J="${PROJECT_ID}_multiqc"
 sbatch -A ${SBATCH_A} -D "${SBATCH_D}" -n ${SBATCH_n} -t ${SBATCH_t} -J "${SBATCH_J}" -o "${SBATCH_J}.%j.out" --wrap "multiqc \
@@ -102,4 +104,3 @@ sbatch -A ${SBATCH_A} -D "${SBATCH_D}" -n ${SBATCH_n} -t ${SBATCH_t} -J "${SBATC
   --no-push \
   $INPUT_DIRS"
 
-#  --config '$CONFIG_DIR/multiqc_config_wgs_qc.yaml' \
