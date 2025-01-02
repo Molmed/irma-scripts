@@ -35,7 +35,7 @@ scripts_path = os.path.join(project_path, "scripts")
 logs_path = os.path.join(project_path, "logs")
 self_path = os.path.dirname(os.path.realpath(__file__))
 template_path = os.path.join(self_path, "run_script_templates")
-config_path = os.path.join(self_path, "config", "genomes_GRCh38_gencode.config")
+config_path = os.path.join(self_path, "config", "analysis.config")
 extra_args = ""
 
 resolved_env_path = os.path.realpath(environment_path)
