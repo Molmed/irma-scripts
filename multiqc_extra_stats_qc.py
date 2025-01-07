@@ -353,7 +353,7 @@ def main():
     os.mkdir(outdir)
     with open(os.path.join(outdir, "QC_list_mqc.yaml"), "w") as fout:
         yaml.dump(qc_out, fout)
-                          with open(os.path.join(outdir, "extra_stats.yaml"), "w") as fout:
+    with open(os.path.join(outdir, "extra_stats.yaml"), "w") as fout:
         yaml.dump(extra_genstats, fout)
 
 if __name__ == "__main__":
