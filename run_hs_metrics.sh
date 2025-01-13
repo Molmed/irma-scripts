@@ -9,17 +9,20 @@
 #SBATCH -o hs_metrics.%j.out
 
 #
-# Run CollectHsMtrics for all recalibrated BAM files in an analysis folder
+# Run CollectHsMtrics for all markduplicate BAM/CRAM files in an analysis folder
 #
 
 BAITS=$1
 TARGETS=$2
 ANALYSISDIR=$3
-INBAM=$4
+INFILE=$4
 METRICS=$5
 
-# singularity container used by sarek, provides CollectHsMetrics
-CONTAINER=/vulpes/ngi/containers/sarek/nfcore-sarek-2.7.img
+# Genome reference needed for CRAM files
+REF="/sw/data/uppnex/ToolBox/hg38bundle/Homo_sapiens_assembly38.fasta"
+
+# singularity container for GATK version used by Sarek3.4.2, provides CollectHsMetrics
+CONTAINER="/vulpes/ngi/containers/biocontainers/singularity-gatk4-4.5.0.0--py36hdfd78af_0.img"
 
 #
 # NOTE: This script is re-used for submitting sbatch jobs, in which case 5 parameters will be used. Users 
@@ -29,21 +32,22 @@ CONTAINER=/vulpes/ngi/containers/sarek/nfcore-sarek-2.7.img
 if [[ $# -eq 3 ]]
 then
   
-  # This is the functionality when the user runs the script with 3 parameters. BAM files will be located
+  # This is the functionality when the user runs the script with 3 parameters. BAM/CRAM files will be located
   # and sbatch jobs for collecting metrics dispatched
 
-  find "${ANALYSISDIR}/results/Preprocessing" -path "*/Recalibrated/*.bam" |while read -r BAM
+  find "${ANALYSISDIR}/results/preprocessing/markduplicates/" -path "*/*.bam" -o -path "*/*.cram" | while read -r ALIGNMENTFILE
   do
-    BAMDIR="$(dirname "${BAM}")"
-    BAMNAME="$(basename "${BAM}")"
+    ALIGNMENTDIR="$(dirname "${ALIGNMENTFILE}")"
+    ALIGNMENTNAME="$(basename "${ALIGNMENTFILE}")"
 
     # construct the path for the metrics file
-    HSDIR="${BAMDIR/Preprocessing/Reports}"
-    HSDIR="${HSDIR/Recalibrated/HsMetrics}"
-    HSFILE="${BAMNAME/.bam/.hs_metrics}"
+    HSDIR="${ALNDIR/preprocessing/reports}"
+    HSDIR="${HSDIR/markduplicates/HsMetrics}"
+    EXTENSION="${ALIGNMENTNAME##*.}"
+    HSFILE="${ALIGNMENTNAME%.${EXTENSION}}.hs_metrics"
 
     mkdir -p "$HSDIR"
-    sbatch -J "${HSFILE}" -o "${HSDIR}/${HSFILE}.out" "$0" "$BAITS" "$TARGETS" "$ANALYSISDIR" "$BAM" "${HSDIR}/${HSFILE}"
+    sbatch -J "${HSFILE}" -o "${HSDIR}/${HSFILE}.out" "$0" "$BAITS" "$TARGETS" "$ANALYSISDIR" "$ALIGNMENTFILE" "${HSDIR}/${HSFILE}"
   done
 
 elif [[ $# -eq 5 ]]
@@ -51,7 +55,13 @@ then
 
   # This is the functionality when the script is run as a sbatch job and launched with 5 parameters
 
-  singularity exec $CONTAINER gatk --java-options -Xmx28g CollectHsMetrics --INPUT=$INBAM --OUTPUT=$METRICS --MAX_RECORDS_IN_RAM=50000000 --BAIT_INTERVALS=$BAITS --TARGET_INTERVALS=$TARGETS
+  singularity exec $CONTAINER gatk --java-options -Xmx28g CollectHsMetrics \
+    --INPUT $INFILE \
+    --OUTPUT $METRICS \
+    --MAX_RECORDS_IN_RAM 50000000 \
+    --BAIT_INTERVALS $BAITS \
+    --TARGET_INTERVALS $TARGETS \
+    --REFERENCE_SEQUENCE $REF
 
 else
   echo
