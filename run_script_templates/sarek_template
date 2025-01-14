@@ -13,6 +13,6 @@ source activate NGI
 #set Nextflow env variables
 export NXF_WORK=_ANALYSISDIR_/_PROJECT_/work
 
-sarek -resume \
+sarek -resume _CONFIG_ \
     -params-file _ANALYSISDIR_/_PROJECT_/scripts/params.json
 
