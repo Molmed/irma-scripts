@@ -13,7 +13,7 @@ source activate NGI
 #set Nextflow env variables
 export NXF_WORK=_ANALYSISDIR_/_PROJECT_/work
 
-methylseq -resume --genome _GENOME_ \
+methylseq -resume _CONFIG_ --genome _GENOME_ \
     --input _ANALYSISDIR_/_PROJECT_/_PROJECT_.SampleSheet.csv \
     --outdir _ANALYSISDIR_/_PROJECT_/results _EXTRAARGS_
 
