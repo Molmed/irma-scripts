@@ -95,13 +95,13 @@ if pipeline == 'sarek':
     sed_cmd = "sed -i"
     os.system(f"cp {template_path}/{pipeline}_params_template {scripts_path}/params.json")
     if not wes:
-        os.system(f"{sed_cmd} '/^wes/d;/^intervals/d' {scripts_path}/parameters.json")
+        os.system(f"{sed_cmd} '/^\s*\"wes\"/d;/^\s*\"intervals\"/d' {scripts_path}/params.json")
     for srch, rplc in [
         ("_PROJECTPATH_", project_path),
         ("_PROJECT_", project),
         ("_GENOME_", genome)]:
         sed_cmd = f"{sed_cmd} -e 's#{srch}#{rplc}#g'"
 
-os.system(f"{sed_cmd} {scripts_path}/params.json")
+        os.system(f"{sed_cmd} {scripts_path}/params.json")
 
 print(f"{scripts_path}/run_analysis.sh has been generated. Good luck with the analysis!")

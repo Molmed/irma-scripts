@@ -41,7 +41,7 @@ then
     ALIGNMENTNAME="$(basename "${ALIGNMENTFILE}")"
 
     # construct the path for the metrics file
-    HSDIR="${ALNDIR/preprocessing/reports}"
+    HSDIR="${ALIGNMENTDIR/preprocessing/reports}"
     HSDIR="${HSDIR/markduplicates/HsMetrics}"
     EXTENSION="${ALIGNMENTNAME##*.}"
     HSFILE="${ALIGNMENTNAME%.${EXTENSION}}.hs_metrics"

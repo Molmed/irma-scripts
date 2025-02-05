@@ -349,7 +349,7 @@ def main():
     qc_out = QC_out(qc_fail, qc)
     extra_genstats = extra_genstats_out(all_data)
     
-    outdir = os.path.join(analysis_dir, "multiqc_qc_check"
+    outdir = os.path.join(analysis_dir, "multiqc_qc_check")
     os.mkdir(outdir)
     with open(os.path.join(outdir, "QC_list_mqc.yaml"), "w") as fout:
         yaml.dump(qc_out, fout)
