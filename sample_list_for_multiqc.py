@@ -15,7 +15,7 @@ def get_sample_names(analysis_path):
     samples = []
     for root, dirs, files in os.walk(analysis_path, followlinks=True):
         for name in files:
-            if name.endswith("samplesheet.csv"):
+            if name.endswith("SampleSheet.csv"):
                 file_path = os.path.join(root, name)
                 with open(file_path) as f:
                     reader = csv.reader(f, delimiter = ",") 

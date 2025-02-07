@@ -24,6 +24,7 @@ fi
 
 PROJDIR="$ANALYSISPATH/$PROJ"
 DATADIR="$DATAPATH/$PROJ"
+SCRIPT_DIR=$(dirname $(realpath "$0"))
 
 FQDIR="${PROJDIR}/fastqs"
 mkdir -p ${FQDIR}
@@ -41,7 +42,7 @@ then
     "${PROJDIR}/${PROJ}.SampleSheet.csv"
 elif [[ $PIPELINE == "sarek" ]]
 then
-  python create_sarek_samplesheet.py \
+  python "${SCRIPT_DIR}/create_sarek_samplesheet.py" \
     "${FQDIR}" \
     "${PROJDIR}/${PROJ}.SampleSheet.csv"
 else

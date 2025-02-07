@@ -8,10 +8,10 @@
 # This script will in turn submit two separate slurm jobs for generating the reports and then exit
 #
 # Usage:
-#  - bash multiqc_sarek_project.sh /proj/ngi2016001/nobackup/NGI/ANALYSIS/<project>
+#  - bash multiqc_sarek_project.sh /proj/ngi2016001/nobackup/NGI/ANALYSIS/<project> <project>
 #
 # A custom script location can be supplied as a second argument (useful during testing):
-#   - bash multiqc_sarek_project.sh /proj/ngi2016001/nobackup/NGI/ANALYSIS/<project> /path/to/scripts_dir
+#   - bash multiqc_sarek_project.sh /proj/ngi2016001/nobackup/NGI/ANALYSIS/<project> <project> /path/to/scripts_dir
 #
 
 PROJECT_PATH=$1
@@ -22,7 +22,7 @@ REPORT_OUTDIR="${PROJECT_PATH}/multiqc_ngi"
 
 if [ -z "$3" ]
   then
-    SCRIPTS_DIR="/vulpes/ngi/production/latest/sw/upps_standalone_scripts"
+    SCRIPTS_DIR="$(dirname $(realpath "$0"))"
   else
     SCRIPTS_DIR=$3
 fi
