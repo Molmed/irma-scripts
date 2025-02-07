@@ -2,7 +2,6 @@
 
 import os
 import argparse
-import csv
 
 def find_runfolders_with_project(project_id):
     incoming_dir = "/proj/ngi2016001/incoming"
@@ -19,7 +18,6 @@ def find_runfolders_with_project(project_id):
                     runfolders_with_project[runfolder] = set(os.listdir(project_path))
                     break
     return runfolders_with_project
-
 
 
 def print_result(runfolders):
