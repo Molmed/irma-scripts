@@ -56,7 +56,7 @@ if pipeline == 'methylseq' and em_seq:
 
 # Create a samplesheet
 os.system(
-    f"create_nf_samplesheet.sh {project} {analysis_path} {data_path} {resolved_env_path} {pipeline}")
+    f"create_nf_samplesheet.sh {project} {analysis_path} {data_path} {pipeline}")
 if pipeline == 'methylseq':
     # Remove the last column (strandedness) from samplesheet
     samplesheet_file = os.path.join(
