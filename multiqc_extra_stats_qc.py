@@ -38,7 +38,7 @@ class QC:
     def pretty_limits(self, metric):
         lt, ut = self.limits(metric)
         match metric:
-            case "Coverage ≥10 X" | "Coverage ≥10 X":
+            case "Coverage ≥10 X" | "Coverage ≥30 X":
                 return f"≥ {lt} X"
             case "Unfiltered variants":
                 return f"{lt / 1000000:.1f}-{ut / 1000000:.1f} M"
