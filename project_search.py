@@ -117,7 +117,7 @@ def check_organization(fastqs, org_paths):
     Identifies fastq files not organized in the given paths.
 
     Returns:
-        {org_dir: (runfolder, fq_filename}
+        {org_dir: (runfolder, fq_filename)}
     """
     not_organized = {}
     for runfolder_path, fq_filenames in fastqs.items():
@@ -143,9 +143,10 @@ def main():
     parser.add_argument(
         "--check_org",
         required=False,
+        default="all",
         help="Check if organizations in /proj/ngi2016001/nobackup/DATA/ "
         "correspond to identified samples and runfolders.\n "
-        "Specify an organized folder (e.g., <project>1234) or 'all' to check <project>*",)
+        "Specify an organized folder (e.g., <project>1234) or 'all' (default) to check <project>*",)
     parser.add_argument(
         "--summary_only",
         action="store_true",
