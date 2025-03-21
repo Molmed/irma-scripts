@@ -42,3 +42,5 @@ Scans incoming for csv-files at most two folders down and greps for the given st
 * __run_hs_metrics.sh__ - Run CollectHsMtrics for all recalibrated BAM files in a WES project.
 * __bed2interval_list.sh__ - Example script on how to run picard BedToIntervalList (format needed for run_hs_metrics.sh).
 * __organize_flowcell.py__ - Script to organize fastq files for a specific runfolder and project prior to analysis.
+* __plot_lambda.py__ - Script to plot lambda based on MultiQC data from the nf-core/methylseq pipeline.
+* __plot_pUC19.py__ - Script to plot pUC19 based on MultiQC data from the nf-core/methylseq pipeline.
