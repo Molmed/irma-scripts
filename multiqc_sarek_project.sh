@@ -64,11 +64,7 @@ fi
 # Gather a list of input dirs to give to MultiQC, exclude report directories not placed directly under the main sample
 # (i.e. reports for individual lanes etc. will be excluded)
 sed -nre 's/^.*<li>([^<]+)<\/li>.*$/\1/p' "$mqc_content/sample_list_mqc.yaml" > "$mqc_content/sample_names.txt"
-INPUT_DIRS=$(for sample in $(cat $mqc_content/sample_names.txt); do
-    find "$PROJECT_PATH" -mindepth 3 -maxdepth 5 -type d \
-      \( -name "${sample}" -o -name "${sample}-*" \) \
-      -path "*/reports/*"
-  done | sort -u | paste -s -d' ')
+INPUT_DIRS=$(for sample in $(cat $mqc_content/sample_names.txt); do find "$PROJECT_PATH" -mindepth 3 -maxdepth 5 -type d -name $sample -a -path "*/reports/*"; done | paste -s -d' ')
 INPUT_DIRS+=" $mqc_content"
 QC_INPUT_DIRS="$INPUT_DIRS $qc_content"
 
