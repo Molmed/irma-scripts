@@ -24,7 +24,5 @@ table_columns_visible:
 
 table_sample_merge:
   "MarkDuplicates": ".md"
-  "Recalibrated": ".recal"
   "Custom stats": ".custom_stats"
   "DeepVariant": ".deepvariant"
-  "HaplotypeCaller": ".haplotypecaller"

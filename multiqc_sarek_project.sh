@@ -103,4 +103,3 @@ sbatch -A ${SBATCH_A} -D "${SBATCH_D}" -n ${SBATCH_n} -t ${SBATCH_t} -J "${SBATC
   --zip-data-dir \
   --no-push \
   $INPUT_DIRS"
-

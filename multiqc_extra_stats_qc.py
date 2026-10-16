@@ -5,17 +5,19 @@ import argparse
 import yaml
 from glob import glob
 
+
 class QC:
     """
     QC criteria for BPA of WGS projects according to INS-00123 v.25.0
     """
+
     def __init__(self):
         self.insert_size = (317, 428)
         self.variants = (4800000, 5300000)
         self.gc = (40.5, 42.1)
         self.percent_mapped = (97.1, 100)
-        self.cov_10_x = (91, float('inf'))
-        self.cov_30_x = (58, float('inf'))
+        self.cov_10_x = (91, float("inf"))
+        self.cov_30_x = (58, float("inf"))
         self.version = "v.25.0"  # Document version INS-00123
 
     def limits(self, metric):
@@ -31,10 +33,10 @@ class QC:
             case "% Mapped":
                 return self.percent_mapped
             case "Average insert size":
-               return self.insert_size
+                return self.insert_size
             case _:
                 return ("N/A", "N/A")
-    
+
     def pretty_limits(self, metric):
         lt, ut = self.limits(metric)
         match metric:
@@ -50,20 +52,21 @@ class QC:
                 return f"{lt}-{ut} nt"
             case _:
                 return f"QC thresholds not found"
-    
+
     def pretty_val(self, metric, value):
         match metric:
             case "Coverage ≥10 X" | "Coverage ≥10 X":
                 return f"{value} X"
             case "Unfiltered variants":
                 return f"{value / 1000000:.1f} M"
-            case  "Average GC %" | "% Mapped":
+            case "Average GC %" | "% Mapped":
                 return f"{value} %"
             case "Average insert size":
                 return f"{value} nt"
             case _:
                 return f"{value}"
-        
+
+
 def parse_arguments():
     parser = argparse.ArgumentParser(
         description="Script to calculate additional metrics and produce custom data files for MultiQC report after WGS analysis with sarek >=3.4.2"
@@ -80,9 +83,9 @@ def parse_arguments():
 
 def find_reports(analysis_dir):
     """
-    Attempts to locate the necessary reports used to generate the extra metrics to 
+    Attempts to locate the necessary reports used to generate the extra metrics to
     include in MultiQC report. If some, but not all, reports are found the script
-    will continue but print a warning. 
+    will continue but print a warning.
 
     Args:
         analysis_dir (str): Path to the analysis directory where sarek results folder is located.
@@ -94,18 +97,24 @@ def find_reports(analysis_dir):
 
     report_folder = os.path.join(analysis_dir, "results/reports/")
     search_paths = {
-        "mosdepth_sum": os.path.join(report_folder, "mosdepth/*/*.md.mosdepth.summary.txt"),
-        "mosdepth_reg": os.path.join(report_folder, "mosdepth/*/*.md.mosdepth.region.dist.txt"),
+        "mosdepth_sum": os.path.join(
+            report_folder, "mosdepth/*/*.md.mosdepth.summary.txt"
+        ),
+        "mosdepth_reg": os.path.join(
+            report_folder, "mosdepth/*/*.md.mosdepth.region.dist.txt"
+        ),
         "samstat": os.path.join(report_folder, "samtools/*/*.md.cram.stats"),
-        "snpeff": os.path.join(report_folder, "snpeff/haplotypecaller/*/*_snpEff.csv")
+        "snpeff": os.path.join(report_folder, "snpeff/deepvariant/*/*_snpEff.csv"),
     }
-    
+
     report_paths = {
         report_type: glob(path) for report_type, path in search_paths.items()
     }
-    
-    missing_reports = [report_type for report_type, paths in report_paths.items() if len(paths) == 0]
-    
+
+    missing_reports = [
+        report_type for report_type, paths in report_paths.items() if len(paths) == 0
+    ]
+
     if 0 <= len(missing_reports) < 4:
         print(f"Using reports in {os.path.dirname(report_folder)}")
         for report in missing_reports:
@@ -115,13 +124,14 @@ def find_reports(analysis_dir):
         print(f"No reports found in {report_folder}")
         return None
 
+
 def calculate_avg_coverage(reports):
     """
     Calculates average autosomal coverage for each sample.
 
     Args:
         reports (list): List of paths to Mosdepth summary reports
-    
+
     Returns:
         dict: Sample(s) (key), average_coverage (value)
     """
@@ -145,37 +155,39 @@ def calculate_avg_coverage(reports):
             avg_cov[sample] = round(bases / length)
     return avg_cov
 
+
 def get_samstats(reports):
     """
-    Collect precalculated values for average insert size and calculates 
+    Collect precalculated values for average insert size and calculates
     average GC % and % mapped reads.
 
     Args:
         reports (list): List of paths to Samtools stats reports
-    
+
     Returns:
         dict: One dict for each metric
     """
     gc_avg, aln_percent, insert_sizes = {}, {}, {}
     for report in reports:
-        sample = os.path.basename(os.path.dirname(report))    
+        sample = os.path.basename(os.path.dirname(report))
         total_gc_percentage = 0.0
         total_reads = 0.0
         with open(report) as fin:
             for line in fin:
-                if line.startswith('GCF') or line.startswith('GCL'):
-                    identifier, gc_percentage, num_reads = line.strip().split('\t')
+                if line.startswith("GCF") or line.startswith("GCL"):
+                    identifier, gc_percentage, num_reads = line.strip().split("\t")
                     total_gc_percentage += float(gc_percentage) * float(num_reads)
                     total_reads += float(num_reads)
-                elif line.startswith('SN\tinsert size average:'):
-                    insert_avg = round(float(line.strip().split('\t')[2]))
+                elif line.startswith("SN\tinsert size average:"):
+                    insert_avg = round(float(line.strip().split("\t")[2]))
                     insert_sizes[sample] = insert_avg
-                elif line.startswith('SN\treads mapped:'):
-                    total_mapped = float(line.strip().split('\t')[2])
-        
+                elif line.startswith("SN\treads mapped:"):
+                    total_mapped = float(line.strip().split("\t")[2])
+
         gc_avg[sample] = round(total_gc_percentage / total_reads)
-        aln_percent[sample]= round(total_mapped / total_reads * 100, 1)
+        aln_percent[sample] = round(total_mapped / total_reads * 100, 1)
     return gc_avg, aln_percent, insert_sizes
+
 
 def extra_genstats_out(sample_data):
     """
@@ -184,28 +196,32 @@ def extra_genstats_out(sample_data):
 
     Args:
         sample_data (dict): Dictionary containing all parsed metrics
-    
+
     Returns:
         dict: Metrics for General stats redy for yaml.dump
     """
     data = {
-    "custom_data": {
-        "extra_stats": {
-            "plot_type": "generalstats",
-            "headers": {
+        "custom_data": {
+            "extra_stats": {
+                "plot_type": "generalstats",
+                "headers": {
                     "Average_insert_size": {"max": 800, "min": 0, "suffix": "nt"},
                     "Average_GC_%": {"max": 100, "min": 0, "suffix": "%"},
-                    "Autosomal_coverage": {"suffix": "X"}
+                    "Autosomal_coverage": {"suffix": "X"},
                 },
-            "data": {}
-        }                
-    }}
+                "data": {},
+            }
+        }
+    }
     metrics = ["Average insert size", "Average GC %", "Autosomal coverage"]
     for metric in metrics:
         for sample, value in sample_data[metric].items():
             header = "_".join(metric.split())
-            data["custom_data"]["extra_stats"]["data"].setdefault(sample, {})[header] = value
+            data["custom_data"]["extra_stats"]["data"].setdefault(sample, {})[
+                header
+            ] = value
     return data
+
 
 def QC_out(qc_fail, qc):
     """
@@ -218,18 +234,19 @@ def QC_out(qc_fail, qc):
 
     Returns:
        dict: QC information ready for yaml.dump
-    
+
     Returns:
         dict: Metrics for General stats redy for yaml.dump
 
     """
     version = qc.version
     yaml_out = {
-            "id": "qc_list",
-            "section_name": "QC check",
-            "plot_type": "html",
-            "description": f"List of samples that fail QC criteria according to INS-00123 {version}.",
-            "data": "\n<ul>\n"}
+        "id": "qc_list",
+        "section_name": "QC check",
+        "plot_type": "html",
+        "description": f"List of samples that fail QC criteria according to INS-00123 {version}.",
+        "data": "\n<ul>\n",
+    }
     if len(qc_fail) != 0:
         for metric in qc_fail:
             limits = qc.pretty_limits(metric)
@@ -242,7 +259,7 @@ def QC_out(qc_fail, qc):
         yaml_out["data"] += "<li>All sample passed QC!</li>\n"
     yaml_out["data"] += "</ul>"
 
-    return yaml_out 
+    return yaml_out
 
 
 def check_qc(data, qc):
@@ -266,6 +283,7 @@ def check_qc(data, qc):
                 failed_metrics.setdefault(metric, []).append((sample, value))
     return failed_metrics
 
+
 def get_x_cov(reports, coverage):
     """
     Parse precalculated values for proportion of reference with a specific coverage
@@ -274,7 +292,7 @@ def get_x_cov(reports, coverage):
     Args:
         reports (list): Paths to mosdepth reports
         coverage (int): The coverage of interest
-    
+
     Returns:
         dict: Percentage at specified coverage per sample
     """
@@ -291,6 +309,7 @@ def get_x_cov(reports, coverage):
                     data[sample] = proportion * 100
     return data
 
+
 def get_number_variants(reports):
     """
     Parse precalculated values for number of unfiltered variants from
@@ -298,7 +317,7 @@ def get_number_variants(reports):
 
     Args:
         reports (list): Paths to snpEff reports
-    
+
     Returns:
         dict: Number of unfiltered variants per sample
     """
@@ -311,6 +330,7 @@ def get_number_variants(reports):
                 if line.startswith("Number_of_variants_before_filter,"):
                     data[sample] = int(line.strip().split(", ")[1])
     return data
+
 
 def collect_data(reports):
     """
@@ -330,9 +350,10 @@ def collect_data(reports):
         "Unfiltered variants": get_number_variants(reports["snpeff"]),
         "Average GC %": gc_avg,
         "% Mapped": aln_percent,
-        "Average insert size": insert_sizes
+        "Average insert size": insert_sizes,
     }
     return data
+
 
 def main():
 
@@ -343,12 +364,12 @@ def main():
     reports = find_reports(analysis_dir)
     if not reports:
         sys.exit(1)
-    
+
     all_data = collect_data(reports)
-    qc_fail = check_qc(all_data, qc) 
+    qc_fail = check_qc(all_data, qc)
     qc_out = QC_out(qc_fail, qc)
     extra_genstats = extra_genstats_out(all_data)
-    
+
     outdir = os.path.join(analysis_dir, "multiqc_qc_check")
     os.mkdir(outdir)
     with open(os.path.join(outdir, "QC_list_mqc.yaml"), "w") as fout:
@@ -356,6 +377,6 @@ def main():
     with open(os.path.join(outdir, "extra_stats.yaml"), "w") as fout:
         yaml.dump(extra_genstats, fout)
 
+
 if __name__ == "__main__":
     main()
-
